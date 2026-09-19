@@ -5,7 +5,7 @@ from app.auth.model import User
 from app.auth.repository import get_session
 from app.auth.schema import LoginRequest, RegisterRequest, TokenResponse, UserResponse
 from app.auth.service import authenticate_user, create_access_token, register_user
-from app.core.security import get_current_user
+from app.core.security import get_current_user, require_role
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -25,3 +25,8 @@ def login(req: LoginRequest, session: Session = Depends(get_session)) -> TokenRe
 @router.get("/me", response_model=UserResponse)
 def get_me(current_user: User = Depends(get_current_user)) -> User:
     return current_user
+
+
+@router.get("/admin-only")
+def admin_only(current_user: User = Depends(require_role("ADMIN"))):
+    return {"message": "admin access granted"}

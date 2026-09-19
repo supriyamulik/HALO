@@ -39,12 +39,15 @@ def get_current_user(
     return user
 
 
-def require_role(*roles: Role) -> Callable[[User], User]:
+def require_role(*roles: Role | str) -> Callable[[User], User]:
+    allowed_roles = {r.value if isinstance(r, Role) else str(r) for r in roles}
+
     def role_checker(current_user: User = Depends(get_current_user)) -> User:
-        if current_user.role not in roles:
+        user_role = current_user.role.value if isinstance(current_user.role, Role) else str(current_user.role)
+        if user_role not in allowed_roles:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="Operation not permitted for current role",
+                detail=f"Operation not permitted for current role: {user_role}",
             )
         return current_user
 
