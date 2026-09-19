@@ -1,0 +1,175 @@
+# HALO — Supriya's Work Doc (End-to-End)
+
+**Project:** HALO — Hallucination-Aware Retrieval and Verification Framework for AI-Assisted Legal Research
+**Frontend name:** Nyaya Sahayak
+**Purpose of this doc:** So you can hand this to any AI or teammate and they immediately know what's built, what's yours, what's his, and what's next.
+
+---
+
+## 1. What HALO Is (one line)
+
+An AI legal research tool that never lets the LLM be the source of truth — every claim it generates has to be checked against real legal evidence (case law, sections, acts) before it's shown as "supported."
+
+---
+
+## 2. The Full Pipeline (so you know where his work fits)
+
+```
+Query Understanding
+        ↓
+Hybrid Retrieval (BM25 + Semantic)
+        ↓
+Reranking
+        ↓
+Grounded Generation (LLM answer)
+        ↓
+Claim Extractor        ✅ done
+        ↓
+Citation Verifier      ✅ done
+        ↓
+Evidence Verifier      ← in progress (built on ONE act first, then scaled)
+        ↓
+Temporal Verifier      ← next milestone
+        ↓
+Conflict Detector
+        ↓
+Confidence Engine
+        ↓
+Fail-Closed Governor
+        ↓
+Final Answer (JSON) → sent to frontend
+```
+
+## 3. Split of Work
+
+| Owner | Scope |
+|---|---|
+| **Teammate** | Data ingestion, corpus, BM25 + semantic retrieval, hybrid merge, reranking, LLM generation, Claim Extractor, Citation Verifier, Evidence Verifier, Temporal Verifier, Conflict Detector, Confidence Engine, Fail-Closed Governor — i.e. everything that *produces* the answer |
+| **Me (Supriya)** | UI, Auth, the non-pipeline API layer, security/audit, explainability UI, research history, DevOps, testing harness — i.e. everything that *serves, protects, and displays* the answer |
+
+We integrate at the end using a fixed JSON contract (Section 6 below) so neither of us blocks the other.
+
+---
+
+## 4. My Phased Plan
+
+**Phase 1 — Auth**
+Login/signup + 4 roles: LAWYER, RESEARCHER, ADMIN, INSTITUTION_ADMIN. No dependency on his pipeline. Do this first.
+
+**Phase 2 — UI Screens (on fake/mock data)**
+Build all screens through ONE central file (`api.js`) that returns fake JSON matching the contract below. Screens never talk to fake data directly — only to `api.js`.
+
+Screens (from current wireframes, 10 total):
+1. Login / Register
+2. Lawyer Dashboard
+3. Legal Research / Ask Question (search + filters)
+4. Hybrid Search Results
+5. Evidence-Grounded AI Answer (answer + sources + confidence bars)
+6. Claim & Citation Verification (VERIFIED / WARNING / FAILED badges)
+7. Judgment / Evidence Viewer (highlighted passage + annotations)
+8. My Cases Workspace
+9. Case Workspace (single case — documents, tasks, hearings)
+10. Research History & Analytics
+
+**Phase 3 — Non-pipeline API layer**
+These endpoints just *save/serve* results, they don't generate anything:
+- `GET /api/v1/research/{query_id}`
+- `GET /api/v1/research/{query_id}/claims`
+- `GET /api/v1/research/{query_id}/evidence`
+- `GET /api/v1/citations/{citation_id}/verify`
+- `GET /api/v1/documents/{document_id}`
+- `GET /api/v1/health`
+- `POST /api/v1/research/query` → this one *triggers* his pipeline (fake it: accept request, return a `query_id`, simulate delay)
+
+**Phase 4 — Security & Audit Logging**
+Encryption, rate limiting, audit log (who queried what, when, model/corpus version, final decision). No dependency on his pipeline.
+
+**Phase 5 — Explainability & Confidence UI**
+Turn `confidence_score`, `warnings`, `conflicts_detected` into the "why this answer is supported" checklist view. Pure UI on top of Phase 2.
+
+**Phase 6 — Research History & Saved Queries**
+Simple DB table: query, answer, timestamp. Doesn't care whether data is fake or real.
+
+**Phase 7 — Basic DevOps**
+Dockerfile + simple CI (run tests on push). Do early, not last-minute.
+
+**Phase 8 — Final Integration**
+Swap fake data in `api.js` for real calls to his endpoints. Test each screen with real answers. Fix any data-shape mismatches. Full run-through before demo.
+
+---
+
+## 5. Order To Build In
+
+Auth → UI screens on fake data → API layer → Security/Audit → Explainability UI → History → DevOps → Final Integration.
+
+---
+
+## 6. The API Contract (build all fake data to match THIS exactly)
+
+From PRD Section 32 — Final Response Contract:
+
+```json
+{
+  "answer_text": "...",
+  "claims": [
+    {
+      "claim_id": "...",
+      "claim_text": "...",
+      "citation": {
+        "case_name": "...",
+        "court": "...",
+        "date": "...",
+        "citation_no": "...",
+        "paragraph": "..."
+      },
+      "verification_status": "supported",
+      "evidence_state": "SUPPORTED_CURRENT",
+      "evidence_passage_id": "..."
+    }
+  ],
+  "sources": [],
+  "confidence_score": 0.87,
+  "evidence_coverage": 0.94,
+  "warnings": [],
+  "conflicts_detected": false,
+  "temporal_context": "...",
+  "corpus_version": "...",
+  "model_version": "...",
+  "verification_timestamp": "...",
+  "retrieval_trace": []
+}
+```
+
+**Rule from PRD:** the frontend cannot set verification status, confidence, evidence state, or source identity — these are always server-controlled. Don't build any UI that lets a user edit these values.
+
+---
+
+## 7. Open Questions To Settle With Teammate (before building fake data)
+
+These aren't blockers, but settle them early so you don't rebuild screens later:
+
+1. **Confidence breakdown mismatch:** wireframes show 3 separate bars (Source Quality / Citation Accuracy / Groundedness), but the PRD contract only has one `confidence_score` + `evidence_coverage`. Ask: does his pipeline actually output 3 separate numbers, or do I compute/derive them on the frontend from his one number?
+
+2. **Verification status granularity:** the Evidence Verifier internally produces 6 statuses — `SUPPORTED`, `CONTRADICTED`, `PARTIALLY_SUPPORTED`, `NEUTRAL`, `CONFLICTED`, `UNRESOLVED`. The PRD contract only shows `verification_status: "supported"` (implying fewer categories). Ask: do all 6 get passed to the frontend as-is, or does something downstream (Confidence Engine / Governor) collapse them first?
+
+3. **Cases / Case Workspace scope:** Screens 8–9 (My Cases, Case Workspace) aren't in the original 6-screen MVP PRD — they're a nice addition matching the PRD's later roadmap ("law firm research workspaces") but may be extra scope. Confirm: in for the hackathon deadline, or a stretch goal?
+
+---
+
+## 8. Current Status (as of now)
+
+- ✅ Wireframes for all 10 screens done (Nyaya Sahayak, Figma)
+- ✅ PRD fully mapped — his pipeline stages and my modules are clearly separated
+- ⏳ Teammate: Claim Extractor ✅, Citation Verifier ✅, Evidence Verifier in progress (built on one act first, will scale to more acts after — ~891 central acts currently in force in India, so starting narrow is correct)
+- ⏳ Me: Not yet started build — this doc is the starting reference point
+
+---
+
+## 9. Reference
+
+Source PRD: `HALO_Production_Grade_PRD_v2.md` — key sections to re-check while building:
+- Section 32 — Final Response Contract (the JSON shape)
+- Section 33 — REST API (endpoint list)
+- Section 35 — Security Architecture (auth/RBAC/encryption/audit)
+- Section 38–40 — Frontend/UX, Screens, Explainability
+- Section 41 — Backend Folder Structure
