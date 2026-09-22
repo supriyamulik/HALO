@@ -53,15 +53,15 @@ function LoginForm({ onSuccess }) {
       )}
 
       <div className="field-group">
-        <label htmlFor="login-email">Bar Council ID or Email</label>
+        <label htmlFor="login-email">Email</label>
         <input
           id="login-email"
-          type="text"
-          placeholder="you@example.com"
+          type="email"
+          placeholder="advocate@example.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          autoComplete="username"
+          autoComplete="email"
         />
       </div>
 

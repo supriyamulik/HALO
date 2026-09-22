@@ -1,0 +1,435 @@
+/* src/pages/ClaimVerificationPage.css
+   ─────────────────────────────────────
+   Styles for the Claim & Citation Verification deep-dive view.
+   All colours use design tokens from index.css.
+   Shared skeleton (.sk-*) and error (.rrp-error-*) classes are
+   already defined in ResearchResultPage.css and reused here.
+*/
+
+/* ── Page shell ──────────────────────────────────────────────────────────── */
+
+.cvp-page {
+  padding: 0 2rem 5rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* ── Top bar ─────────────────────────────────────────────────────────────── */
+
+.cvp-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 0;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.cvp-topbar-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.cvp-page-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  letter-spacing: -0.01em;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.cvp-query-id-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.cvp-back-link {
+  white-space: nowrap;
+  font-size: 0.875rem;
+  min-width: 140px;
+}
+
+/* ── Summary strip ───────────────────────────────────────────────────────── */
+
+.cvp-summary-strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 1rem 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.04);
+  flex-wrap: wrap;
+}
+
+.cvp-summary-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.25rem 1.75rem;
+  flex: 1;
+  min-width: 100px;
+}
+
+.cvp-summary-divider {
+  width: 1px;
+  height: 40px;
+  background: var(--color-border);
+  flex-shrink: 0;
+}
+
+.cvp-summary-num {
+  font-size: 1.8rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.cvp-summary-lbl {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+/* Colour theming per summary column */
+.cvp-summary-total    .cvp-summary-num { color: var(--color-text-primary); }
+.cvp-summary-verified .cvp-summary-num { color: #15803d; }
+.cvp-summary-warnings .cvp-summary-num { color: #a16207; }
+.cvp-summary-failed   .cvp-summary-num { color: #b91c1c; }
+
+/* ── Claim cards list ────────────────────────────────────────────────────── */
+
+.cvp-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+/* ── Individual claim card ───────────────────────────────────────────────── */
+
+.cvp-claim-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-left-width: 5px;
+  border-radius: 12px;
+  padding: 1.35rem 1.5rem 1.1rem;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.2s;
+}
+
+.cvp-claim-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
+}
+
+/* Left border colour by status */
+.cvp-claim-card--supported { border-left-color: #16a34a; }
+.cvp-claim-card--warning   { border-left-color: #d97706; }
+.cvp-claim-card--failed    { border-left-color: #dc2626; }
+
+/* ── Card header ─────────────────────────────────────────────────────────── */
+
+.cvp-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+  margin-bottom: 1.1rem;
+}
+
+.cvp-card-number {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  font-size: 0.82rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 0.02em;
+  margin-top: 0.05rem;
+}
+
+.cvp-card-claim-text {
+  flex: 1;
+  font-size: 0.975rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  line-height: 1.55;
+  min-width: 0;
+}
+
+/* Status badge — top-right of header */
+.cvp-status-badge {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.65rem;
+  border-radius: 5px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  margin-top: 0.1rem;
+}
+
+.cvp-badge--verified { background: #dcfce7; color: #15803d; }
+.cvp-badge--warning  { background: #fef9c3; color: #a16207; }
+.cvp-badge--failed   { background: #fee2e2; color: #b91c1c; }
+
+/* ── Sub-check rows ──────────────────────────────────────────────────────── */
+
+.cvp-subchecks {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid var(--color-border);
+  border-radius: 9px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.cvp-subcheck-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+  transition: background 0.15s;
+}
+
+.cvp-subcheck-row:last-child {
+  border-bottom: none;
+}
+
+/* Background tints per state */
+.cvp-subcheck-row--pass    { background: #f0fdf4; }
+.cvp-subcheck-row--caution { background: #fffbeb; }
+.cvp-subcheck-row--fail    { background: #fff1f2; }
+
+.cvp-subcheck-row:hover {
+  filter: brightness(0.975);
+}
+
+/* Sub-check icon */
+.cvp-subcheck-icon {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+  font-weight: 900;
+  margin-top: 0.05rem;
+}
+
+.cvp-subcheck-pass    { background: #dcfce7; color: #15803d; }
+.cvp-subcheck-caution { background: #fef9c3; color: #a16207; }
+.cvp-subcheck-fail    { background: #fee2e2; color: #b91c1c; }
+
+.cvp-subcheck-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.cvp-subcheck-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  letter-spacing: 0.01em;
+}
+
+.cvp-subcheck-row--pass    .cvp-subcheck-label { color: #15803d; }
+.cvp-subcheck-row--caution .cvp-subcheck-label { color: #a16207; }
+.cvp-subcheck-row--fail    .cvp-subcheck-label { color: #b91c1c; }
+
+.cvp-subcheck-detail {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  line-height: 1.45;
+}
+
+/* ── Case source footer ──────────────────────────────────────────────────── */
+
+.cvp-case-source {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  padding: 0.55rem 0.75rem;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 7px;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+.cvp-case-source-icon {
+  flex-shrink: 0;
+  font-size: 0.9rem;
+  margin-top: 0.05rem;
+}
+
+.cvp-case-source-text strong {
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
+
+.cvp-case-paragraph {
+  font-family: "Courier New", monospace;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+/* ── Bottom action bar ───────────────────────────────────────────────────── */
+
+.cvp-action-bar {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(8px);
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.cvp-action-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.cvp-action-btn {
+  font-size: 0.875rem;
+  font-weight: 700;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+}
+
+.cvp-accept-btn {
+  background: var(--color-accent);
+  color: #fff;
+  transition: background 0.15s;
+}
+
+.cvp-accept-btn:hover {
+  background: var(--color-accent-hover);
+}
+
+.cvp-review-btn {
+  background: #fffbeb;
+  color: #a16207;
+  border: 1.5px solid #fde68a;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.cvp-review-btn:hover {
+  background: #fef9c3;
+  border-color: #f59e0b;
+}
+
+/* ── Skeleton extras ─────────────────────────────────────────────────────── */
+
+/* Reuses .sk-line, .sk-back, .sk-heading, .sk-para etc from ResearchResultPage.css */
+
+.cvp-sk-title {
+  height: 24px;
+  width: 340px;
+  border-radius: 6px;
+}
+
+.cvp-sk-strip {
+  height: 90px;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  margin-bottom: 2rem;
+}
+
+.cvp-sk-card {
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .cvp-page {
+    padding: 0 1rem 4rem;
+  }
+
+  .cvp-topbar {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .cvp-topbar-center {
+    order: -1;
+    width: 100%;
+  }
+
+  .cvp-page-title {
+    font-size: 1.05rem;
+    white-space: normal;
+    text-align: center;
+  }
+
+  .cvp-summary-strip {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .cvp-summary-item {
+    padding: 0.25rem 0.75rem;
+  }
+
+  .cvp-action-bar {
+    position: static;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cvp-action-bar-right {
+    flex-direction: column;
+  }
+
+  .cvp-action-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

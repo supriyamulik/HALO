@@ -31,13 +31,36 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Surface the backend detail string whenever available
-    const detail =
-      error?.response?.data?.detail ??
-      error?.response?.data?.message ??
-      error?.message ??
-      "An unexpected error occurred.";
-    return Promise.reject(new Error(detail));
+    const data = error?.response?.data;
+    const detail = data?.detail;
+    let message = "";
+
+    if (typeof detail === "string" && detail.trim()) {
+      message = detail;
+    } else if (Array.isArray(detail) && detail.length > 0) {
+      message = detail
+        .map((item) => {
+          if (!item) return "";
+          if (typeof item === "string") return item;
+          const field = Array.isArray(item.loc)
+            ? item.loc.filter((loc) => loc !== "body").join(".")
+            : "";
+          const msg = item.msg || item.message || JSON.stringify(item);
+          return field ? `${field}: ${msg}` : msg;
+        })
+        .filter(Boolean)
+        .join("; ");
+    } else if (data?.message && typeof data.message === "string") {
+      message = data.message;
+    } else if (error?.message && typeof error.message === "string") {
+      message = error.message;
+    }
+
+    if (!message) {
+      message = "Something went wrong, please try again.";
+    }
+
+    return Promise.reject(new Error(message));
   }
 );
 

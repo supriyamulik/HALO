@@ -13,8 +13,11 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import DashboardPage from "./pages/DashboardPage";
 import LoginPage from "./pages/LoginPage";
+import ResearchPage from "./pages/ResearchPage";
+import ResearchResultPage from "./pages/ResearchResultPage";
 import PlaceholderPage from "./pages/PlaceholderPage";
 import AppShell from "./components/AppShell";
+import ClaimVerificationPage from "./pages/ClaimVerificationPage";
 
 export default function App() {
   return (
@@ -39,9 +42,25 @@ export default function App() {
         path="/research"
         element={
           <ProtectedRoute>
-            <AppShell user={null}>
-              <PlaceholderPage title="Research" />
-            </AppShell>
+            <ResearchPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/research/:queryId"
+        element={
+          <ProtectedRoute>
+            <ResearchResultPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/research/:queryId/verify"
+        element={
+          <ProtectedRoute>
+            <ClaimVerificationPage />
           </ProtectedRoute>
         }
       />
