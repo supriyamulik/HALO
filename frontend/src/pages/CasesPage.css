@@ -1,0 +1,784 @@
+/* src/pages/CasesPage.css
+   ────────────────────────
+   Case & Matter Dossier Workspace Styling for HALO.
+   Uses approved tokens from index.css.
+*/
+
+.cs-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Breadcrumb Navigation ────────────────────────────────────────────────── */
+
+.cs-breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--halo-font-ui);
+  font-size: 0.8125rem;
+  color: var(--halo-ink-muted);
+  margin-bottom: 1.25rem;
+}
+
+.cs-breadcrumb-link,
+.cs-breadcrumb-btn {
+  color: var(--halo-accent);
+  text-decoration: none;
+  background: none;
+  border: none;
+  font-family: var(--halo-font-ui);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+}
+
+.cs-breadcrumb-link:hover,
+.cs-breadcrumb-btn:hover {
+  text-decoration: underline;
+}
+
+.cs-breadcrumb-sep {
+  color: var(--halo-border);
+}
+
+.cs-breadcrumb-active {
+  color: var(--halo-ink-primary);
+  font-weight: 600;
+}
+
+/* ── Workspace Header ─────────────────────────────────────────────────────── */
+
+.cs-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 24px;
+}
+
+.cs-title {
+  font-family: var(--halo-font-ui);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--halo-ink-primary);
+  letter-spacing: -0.02em;
+  margin: 0 0 0.35rem 0;
+}
+
+.cs-subtitle {
+  font-family: var(--halo-font-ui);
+  font-size: 0.9375rem;
+  color: var(--halo-ink-muted);
+  line-height: 1.45;
+  margin: 0;
+  max-width: 720px;
+}
+
+.cs-new-btn {
+  padding: 0.55rem 1.15rem;
+  font-size: 0.875rem;
+}
+
+/* ── Workspace Stats (4 Compact Stat Chips) ──────────────────────────────── */
+
+.cs-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 24px;
+}
+
+.cs-stat-card {
+  background: var(--halo-surface);
+  border: 1px solid var(--halo-border);
+  border-radius: var(--halo-radius-card);
+  padding: 1.15rem 1.25rem;
+  box-shadow: var(--halo-shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.cs-stat-card:hover {
+  border-color: var(--halo-accent);
+  transform: translateY(-1px);
+}
+
+.cs-stat-label {
+  font-family: var(--halo-font-ui);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--halo-ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.cs-stat-value {
+  font-family: var(--halo-font-display);
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--halo-ink-primary);
+  line-height: 1.1;
+}
+
+.cs-stat-sub {
+  font-family: var(--halo-font-ui);
+  font-size: 0.75rem;
+  color: var(--halo-ink-muted);
+}
+
+/* ── Filter & Search Controls ────────────────────────────────────────────── */
+
+.cs-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 20px;
+}
+
+.cs-search-box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--halo-surface);
+  border: 1px solid var(--halo-border);
+  border-radius: var(--halo-radius-control);
+  padding: 0.45rem 0.85rem;
+  flex: 1;
+  max-width: 480px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cs-search-box:focus-within {
+  border-color: var(--halo-accent);
+  box-shadow: 0 0 0 1px var(--halo-accent);
+}
+
+.cs-search-input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: var(--halo-font-ui);
+  font-size: 0.875rem;
+  color: var(--halo-ink-primary);
+  width: 100%;
+}
+
+.cs-search-input::placeholder {
+  color: var(--halo-ink-muted);
+}
+
+.cs-filter-select {
+  font-family: var(--halo-font-ui);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--halo-ink-primary);
+  background: var(--halo-surface);
+  border: 1px solid var(--halo-border);
+  border-radius: var(--halo-radius-control);
+  padding: 0.45rem 0.85rem;
+  outline: none;
+}
+
+.cs-filter-select:focus {
+  border-color: var(--halo-accent);
+}
+
+/* ── Case Portfolio Grid ─────────────────────────────────────────────────── */
+
+.cs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr));
+  gap: 1.25rem;
+}
+
+/* ── Legal Matter Dossier Cards (Physical Folder Tab Silhouette) ── */
+
+.cs-card-wrapper {
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s ease;
+  min-width: 0;
+}
+
+@media (max-width: 768px) {
+
+  .cs-stats-grid,
+  .cs-authorities-grid,
+  .cs-meta-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cs-controls,
+  .cs-dossier-header,
+  .cs-form-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .cs-search-box {
+    max-width: none;
+    width: 100%;
+  }
+}
+
+/* Authentic Docket File Folder Tab */
+.cs-folder-tab {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  margin-left: 1rem;
+  padding: 0.35rem 0.85rem;
+  background-color: var(--halo-surface-subtle);
+  border: 1px solid var(--halo-border);
+  border-bottom: 1px solid var(--halo-surface);
+  border-radius: 6px 6px 0 0;
+  margin-bottom: -1px;
+  position: relative;
+  z-index: 2;
+  transition: all 0.15s ease;
+}
+
+.cs-tab-label {
+  font-family: var(--halo-font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--halo-ink-secondary);
+  letter-spacing: 0.02em;
+}
+
+/* Card Body: Border-defined structure, zero float shadow */
+.cs-card {
+  background: var(--halo-surface);
+  border: 1px solid var(--halo-border);
+  border-radius: var(--halo-radius-card);
+  padding: 1.5rem;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: border-color 0.15s ease;
+  position: relative;
+  z-index: 1;
+}
+
+/* Synchronized Hover: Tab + Card Borders Highlight with Judicial Accent */
+.cs-card-wrapper:hover .cs-folder-tab {
+  border-color: var(--halo-accent);
+  background-color: var(--halo-accent-subtle);
+}
+
+.cs-card-wrapper:hover .cs-tab-label {
+  color: var(--halo-accent);
+}
+
+.cs-card-wrapper:hover .cs-card {
+  border-color: var(--halo-accent);
+}
+
+.cs-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cs-card-category {
+  font-family: var(--halo-font-ui);
+  font-size: 0.725rem;
+  font-weight: 600;
+  color: var(--halo-ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Solid 6px Status Dot + Plain Text (No outline badge pills) */
+.cs-status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--halo-font-ui);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.cs-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.cs-status-dot.dot-active {
+  background-color: var(--halo-verified-text);
+}
+
+.cs-status-dot.dot-underreview {
+  background-color: var(--halo-warning-text);
+}
+
+.cs-status-dot.dot-inhearing {
+  background-color: var(--halo-accent);
+}
+
+.cs-status-dot.dot-archived {
+  background-color: var(--halo-ink-muted);
+}
+
+.cs-status-text {
+  color: var(--halo-ink-secondary);
+  letter-spacing: 0.01em;
+}
+
+/* Matter Title in Newsreader Editorial Serif (like court filing heading) */
+.cs-card-title {
+  font-family: var(--halo-font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--halo-ink-primary);
+  line-height: 1.35;
+  margin: 0;
+}
+
+.cs-card-desc {
+  font-family: var(--halo-font-ui);
+  font-size: 0.825rem;
+  line-height: 1.55;
+  color: var(--halo-ink-secondary);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Client / Court info: Hairline divider, structured two-column data, NO gray background callout */
+.cs-card-meta {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.75rem 1rem;
+  background-color: transparent;
+  border: none;
+  border-top: 1px solid var(--halo-border-subtle);
+  border-radius: 0;
+  padding: 0.85rem 0 0 0;
+}
+
+.cs-meta-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.cs-meta-label {
+  font-family: var(--halo-font-ui);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--halo-ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.cs-meta-val {
+  font-family: var(--halo-font-ui);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--halo-ink-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cs-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--halo-border-subtle);
+  padding-top: 0.75rem;
+  font-family: var(--halo-font-ui);
+  font-size: 0.775rem;
+}
+
+.cs-queries-count {
+  color: var(--halo-ink-muted);
+}
+
+.cs-open-arrow {
+  color: var(--halo-accent);
+  font-weight: 600;
+  transition: transform 0.15s ease;
+}
+
+.cs-card-wrapper:hover .cs-open-arrow {
+  transform: translateX(3px);
+}
+
+/* ── Dossier Drawer / Matter View ────────────────────────────────────────── */
+
+.cs-dossier {
+  background: var(--halo-surface);
+  border: 1px solid var(--halo-border);
+  border-radius: var(--halo-radius-card);
+  padding: 2rem 2.25rem;
+  box-shadow: var(--halo-shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.cs-dossier-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--halo-border);
+  padding-bottom: 1.5rem;
+  gap: 1.5rem;
+}
+
+.cs-dossier-top {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.cs-matter-no-lg {
+  font-family: var(--halo-font-mono);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--halo-ink-muted);
+}
+
+.cs-category-tag {
+  font-family: var(--halo-font-ui);
+  font-size: 0.725rem;
+  font-weight: 600;
+  color: var(--halo-ink-secondary);
+  background-color: var(--halo-surface-subtle);
+  border: 1px solid var(--halo-border);
+  padding: 2px 7px;
+  border-radius: var(--halo-radius-pill);
+}
+
+/* Matter Title in Newsreader Editorial Serif */
+.cs-dossier-title {
+  font-family: var(--halo-font-display);
+  font-size: 1.85rem;
+  font-weight: 600;
+  color: var(--halo-ink-primary);
+  line-height: 1.3;
+  margin: 0 0 0.5rem 0;
+}
+
+.cs-dossier-meta-strip {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  font-family: var(--halo-font-ui);
+  font-size: 0.8125rem;
+  color: var(--halo-ink-muted);
+}
+
+.cs-dossier-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+/* Sections */
+.cs-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cs-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cs-section-title {
+  font-family: var(--halo-font-ui);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--halo-ink-primary);
+  margin: 0 0 0.25rem 0;
+}
+
+.cs-section-subtitle {
+  font-family: var(--halo-font-ui);
+  font-size: 0.8125rem;
+  color: var(--halo-ink-muted);
+  margin: 0;
+}
+
+.cs-synopsis-text {
+  font-family: var(--halo-font-ui);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--halo-ink-secondary);
+  margin: 0;
+}
+
+/* ── Linked Queries & Pinned Authorities (Compact Rows with Hairlines) ────── */
+
+.cs-attached-list,
+.cs-authorities-list {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--halo-border);
+  border-radius: var(--halo-radius-control);
+  overflow: hidden;
+}
+
+.cs-attached-card,
+.cs-authority-card {
+  padding: 0.9rem 1.15rem;
+  border-bottom: 1px solid var(--halo-border-subtle);
+  background-color: var(--halo-surface);
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cs-attached-card:last-child,
+.cs-authority-card:last-child {
+  border-bottom: none;
+}
+
+/* Hover shifts border & subtle bg */
+.cs-attached-card:hover,
+.cs-authority-card:hover {
+  background-color: var(--halo-surface-subtle);
+}
+
+.cs-attached-top,
+.cs-auth-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cs-query-id {
+  font-family: var(--halo-font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--halo-ink-muted);
+}
+
+.cs-clean-pill {
+  font-family: var(--halo-font-ui);
+  font-size: 0.725rem;
+  font-weight: 600;
+  color: var(--halo-verified-text);
+  background-color: var(--halo-verified-bg);
+  border: 1px solid var(--halo-verified-border);
+  padding: 2px 7px;
+  border-radius: var(--halo-radius-pill);
+}
+
+.cs-conflict-pill {
+  font-family: var(--halo-font-ui);
+  font-size: 0.725rem;
+  font-weight: 600;
+  color: var(--halo-conflict-text);
+  background-color: var(--halo-conflict-bg);
+  border: 1px solid var(--halo-conflict-border);
+  padding: 2px 7px;
+  border-radius: var(--halo-radius-pill);
+}
+
+.cs-conf-pill {
+  font-family: var(--halo-font-mono);
+  font-size: 0.75rem;
+  color: var(--halo-ink-secondary);
+}
+
+.cs-attached-query-text {
+  font-family: var(--halo-font-ui);
+  font-size: 0.875rem;
+  color: var(--halo-ink-primary);
+  font-weight: 500;
+  margin: 0;
+}
+
+.cs-attached-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: 0.25rem;
+}
+
+.cs-action-btn {
+  padding: 0.3rem 0.65rem;
+  font-size: 0.775rem;
+}
+
+/* Authority card */
+.cs-auth-citation {
+  font-family: var(--halo-font-display);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--halo-ink-primary);
+  margin: 0;
+}
+
+.cs-auth-relevance {
+  font-family: var(--halo-font-ui);
+  font-size: 0.8125rem;
+  color: var(--halo-ink-secondary);
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* ── Counsel Notes Log (Chronological + Monospace Timestamp) ─────────────── */
+
+.cs-notes-log {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--halo-border);
+  border-radius: var(--halo-radius-control);
+  overflow: hidden;
+}
+
+.cs-note-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.85rem 1.15rem;
+  border-bottom: 1px solid var(--halo-border-subtle);
+  background-color: var(--halo-surface);
+}
+
+.cs-note-entry:last-child {
+  border-bottom: none;
+}
+
+.cs-note-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.cs-note-timestamp {
+  font-family: var(--halo-font-mono);
+  font-size: 0.75rem;
+  color: var(--halo-ink-muted);
+}
+
+.cs-note-author {
+  font-family: var(--halo-font-ui);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--halo-accent);
+}
+
+.cs-note-text {
+  font-family: var(--halo-font-ui);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--halo-ink-primary);
+  margin: 0;
+}
+
+/* ── Modals (Standard HALO Card Treatment) ────────────────────────────────── */
+
+.cs-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 1.5rem;
+}
+
+.cs-modal {
+  background: var(--halo-surface);
+  border: 1px solid var(--halo-border);
+  border-radius: var(--halo-radius-card);
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.cs-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--halo-border);
+}
+
+.cs-modal-title {
+  font-family: var(--halo-font-ui);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--halo-ink-primary);
+  margin: 0;
+}
+
+.cs-modal-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cs-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--halo-border);
+  background-color: var(--halo-surface-subtle);
+}
+
+.cs-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.cs-form-group label {
+  font-family: var(--halo-font-ui);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--halo-ink-secondary);
+}
+
+.cs-form-group input,
+.cs-form-group select,
+.cs-form-group textarea {
+  font-family: var(--halo-font-ui);
+  font-size: 0.875rem;
+  color: var(--halo-ink-primary);
+  background: var(--halo-surface);
+  border: 1px solid var(--halo-border);
+  border-radius: var(--halo-radius-control);
+  padding: 0.55rem 0.75rem;
+  outline: none;
+}
+
+.cs-form-group input:focus,
+.cs-form-group select:focus,
+.cs-form-group textarea:focus {
+  border-color: var(--halo-accent);
+}

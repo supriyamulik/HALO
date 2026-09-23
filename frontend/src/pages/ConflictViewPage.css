@@ -1,0 +1,571 @@
+/* src/pages/ConflictViewPage.css
+   ─────────────────────────────────
+   Judicial Conflict Inspector Styling for HALO.
+   Uses approved tokens from index.css.
+*/
+
+.cfv-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Top Bar ─────────────────────────────────────────────────────────────── */
+
+.cfv-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--halo-border);
+  margin-bottom: 24px;
+}
+
+.cfv-header-left {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.cfv-back-btn {
+  font-family: var(--halo-font-ui);
+  font-size: 0.85rem;
+  padding: 0.4rem 0.65rem;
+}
+
+.cfv-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.cfv-title {
+  font-family: var(--halo-font-ui);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--halo-ink-primary);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.cfv-query-badge {
+  background-color: var(--halo-surface-subtle);
+  border: 1px solid var(--halo-border);
+  border-radius: var(--halo-radius-pill);
+  padding: 2px 7px;
+  font-family: var(--halo-font-mono);
+  font-size: 0.725rem;
+  color: var(--halo-ink-secondary);
+}
+
+.cfv-content-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ── Conflict Alert Banner (--halo-conflict-* tokens) ────────────────────── */
+
+.cfv-conflict-banner {
+  background-color: var(--halo-conflict-bg);
+  border: 1px solid var(--halo-conflict-border);
+  color: var(--halo-conflict-text);
+  border-radius: var(--halo-radius-card);
+  padding: 1.15rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.cfv-banner-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+}
+
+.cfv-banner-icon {
+  color: var(--halo-conflict-text);
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.cfv-banner-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.cfv-banner-title {
+  font-family: var(--halo-font-ui);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.cfv-banner-topic {
+  font-family: var(--halo-font-ui);
+  font-size: 0.825rem;
+  color: var(--halo-conflict-text);
+  margin: 0;
+}
+
+.cfv-banner-status-pill {
+  font-family: var(--halo-font-ui);
+  font-size: 0.75rem;
+  font-weight: 600;
+  background-color: var(--halo-surface);
+  border: 1px solid var(--halo-conflict-border);
+  color: var(--halo-conflict-text);
+  padding: 4px 10px;
+  border-radius: var(--halo-radius-pill);
+  white-space: nowrap;
+}
+
+/* ── Background Card ─────────────────────────────────────────────────────── */
+
+.cfv-background-card {
+  background: var(--halo-surface);
+  border: 1px solid var(--halo-border);
+  border-radius: var(--halo-radius-card);
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--halo-shadow-card);
+}
+
+.cfv-card-section-title {
+  font-family: var(--halo-font-ui);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--halo-ink-primary);
+  margin: 0 0 0.5rem 0;
+}
+
+.cfv-background-p {
+  font-family: var(--halo-font-ui);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--halo-ink-secondary);
+  margin: 0;
+}
+
+/* ── Dual-Column Authority Comparison (Apex vs Subordinate) ──────────────── */
+
+.cfv-comparison-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.cfv-section-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cfv-vs-chip {
+  font-family: var(--halo-font-ui);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--halo-ink-muted);
+  background-color: var(--halo-surface-subtle);
+  border: 1px solid var(--halo-border);
+  padding: 2px 8px;
+  border-radius: var(--halo-radius-pill);
+}
+
+.cfv-dual-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1.5rem;
+}
+
+.cfv-authority-card {
+  background: var(--halo-surface);
+  border: 1px solid var(--halo-border);
+  border-radius: var(--halo-radius-card);
+  padding: 1.5rem;
+  box-shadow: var(--halo-shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+
+.cfv-auth-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--halo-border-subtle);
+  padding-bottom: 1rem;
+}
+
+.cfv-auth-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Court Tier Badges (Accent & Subtle Tones, not red/green) */
+.cfv-tier-badge {
+  font-family: var(--halo-font-ui);
+  font-size: 0.725rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: var(--halo-radius-pill);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.tier-badge-apex {
+  background-color: var(--halo-accent-subtle);
+  color: var(--halo-accent);
+  border: 1px solid var(--halo-border);
+}
+
+.tier-badge-subordinate {
+  background-color: var(--halo-surface-subtle);
+  color: var(--halo-ink-secondary);
+  border: 1px solid var(--halo-border);
+}
+
+.cfv-auth-label {
+  font-family: var(--halo-font-ui);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--halo-ink-muted);
+}
+
+.cfv-auth-case-name {
+  font-family: var(--halo-font-display);
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--halo-ink-primary);
+  margin: 0;
+  line-height: 1.35;
+}
+
+.cfv-auth-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  font-family: var(--halo-font-ui);
+  font-size: 0.775rem;
+  color: var(--halo-ink-muted);
+}
+
+.cfv-meta-mono {
+  font-family: var(--halo-font-mono);
+  font-size: 0.75rem;
+  color: var(--halo-ink-primary);
+}
+
+.cfv-meta-sep {
+  opacity: 0.4;
+}
+
+/* Passage Text */
+.cfv-auth-passage-box {
+  background-color: var(--halo-surface-subtle);
+  border: 1px solid var(--halo-border);
+  border-radius: var(--halo-radius-control);
+  overflow: hidden;
+}
+
+.cfv-passage-bar {
+  background-color: var(--halo-surface-subtle);
+  border-bottom: 1px solid var(--halo-border);
+  padding: 0.35rem 0.75rem;
+}
+
+.cfv-passage-bar-label {
+  font-family: var(--halo-font-ui);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--halo-ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.cfv-passage-quote {
+  padding: 0.85rem 1rem;
+  font-family: var(--halo-font-ui);
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: var(--halo-ink-primary);
+  margin: 0;
+  font-style: italic;
+}
+
+/* Holding */
+.cfv-auth-holding {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.cfv-holding-label {
+  font-family: var(--halo-font-ui);
+  font-size: 0.725rem;
+  font-weight: 700;
+  color: var(--halo-ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.cfv-holding-text {
+  font-family: var(--halo-font-ui);
+  font-size: 0.85rem;
+  color: var(--halo-ink-secondary);
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* Metric Footer */
+.cfv-auth-footer-metric {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--halo-border-subtle);
+  padding-top: 0.75rem;
+}
+
+.cfv-nli-label {
+  font-family: var(--halo-font-ui);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--halo-ink-muted);
+}
+
+.cfv-nli-mono {
+  font-family: var(--halo-font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--halo-accent);
+  background-color: var(--halo-accent-subtle);
+  padding: 2px 7px;
+  border-radius: var(--halo-radius-pill);
+}
+
+/* ── Bench Strength & Temporal Comparison Table ──────────────────────────── */
+
+.cfv-table-card {
+  background: var(--halo-surface);
+  border: 1px solid var(--halo-border);
+  border-radius: var(--halo-radius-card);
+  padding: 1.5rem;
+  box-shadow: var(--halo-shadow-card);
+}
+
+.cfv-table-wrapper {
+  overflow-x: auto;
+  margin-top: 0.75rem;
+}
+
+.cfv-matrix-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--halo-font-ui);
+  font-size: 0.8125rem;
+}
+
+.cfv-matrix-table th {
+  text-align: left;
+  padding: 0.65rem 0.85rem;
+  background-color: var(--halo-surface-subtle);
+  color: var(--halo-ink-secondary);
+  font-weight: 600;
+  border-bottom: 1px solid var(--halo-border);
+  font-size: 0.775rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.cfv-matrix-table td {
+  padding: 0.75rem 0.85rem;
+  border-bottom: 1px solid var(--halo-border-subtle);
+  color: var(--halo-ink-primary);
+  vertical-align: middle;
+}
+
+.cfv-matrix-table tr:last-child td {
+  border-bottom: none;
+}
+
+.matrix-dim-label {
+  font-weight: 600;
+  color: var(--halo-ink-secondary);
+}
+
+.matrix-court-name {
+  margin-left: 0.5rem;
+  font-weight: 500;
+}
+
+.matrix-mono-val {
+  font-family: var(--halo-font-mono);
+  font-size: 0.775rem;
+  color: var(--halo-ink-primary);
+  background-color: var(--halo-surface-subtle);
+  padding: 2px 6px;
+  border-radius: var(--halo-radius-pill);
+}
+
+.matrix-subtext {
+  font-size: 0.75rem;
+  color: var(--halo-ink-muted);
+  margin-left: 0.4rem;
+}
+
+.matrix-binding-text {
+  color: var(--halo-accent);
+  font-weight: 600;
+}
+
+.matrix-persuasive-text {
+  color: var(--halo-ink-muted);
+}
+
+.cfv-temporal-note-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  background-color: var(--halo-surface-subtle);
+  border: 1px solid var(--halo-border-subtle);
+  border-radius: var(--halo-radius-control);
+  padding: 0.75rem 1rem;
+  margin-top: 1.15rem;
+}
+
+.cfv-temporal-clock {
+  color: var(--halo-ink-muted);
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.cfv-temporal-note-box p {
+  font-family: var(--halo-font-ui);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--halo-ink-secondary);
+  margin: 0;
+}
+
+/* ── Article 141 Advisory Block (Informational, Neutral) ─────────────────── */
+
+.cfv-advisory-card {
+  background-color: var(--halo-surface-subtle);
+  border: 1px solid var(--halo-border);
+  border-radius: var(--halo-radius-card);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.cfv-advisory-header {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.cfv-advisory-scale-icon {
+  color: var(--halo-accent);
+}
+
+.cfv-advisory-title {
+  font-family: var(--halo-font-ui);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--halo-ink-primary);
+  margin: 0;
+}
+
+.cfv-advisory-body {
+  font-family: var(--halo-font-ui);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--halo-ink-primary);
+  margin: 0;
+}
+
+.cfv-advisory-impact {
+  border-top: 1px solid var(--halo-border);
+  padding-top: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.cfv-impact-badge {
+  font-family: var(--halo-font-ui);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--halo-ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.cfv-impact-text {
+  font-family: var(--halo-font-ui);
+  font-size: 0.8125rem;
+  color: var(--halo-ink-secondary);
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* ── Clean No-Conflict State ─────────────────────────────────────────────── */
+
+.cfv-clean-box {
+  background: var(--halo-surface);
+  border: 1px solid var(--halo-border);
+  border-radius: var(--halo-radius-card);
+  padding: 4rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  text-align: center;
+  box-shadow: var(--halo-shadow-card);
+}
+
+.cfv-clean-icon {
+  color: var(--halo-verified-text);
+}
+
+.cfv-clean-title {
+  font-family: var(--halo-font-ui);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--halo-ink-primary);
+  margin: 0;
+}
+
+.cfv-clean-desc {
+  font-family: var(--halo-font-ui);
+  font-size: 0.875rem;
+  color: var(--halo-ink-muted);
+  max-width: 480px;
+  margin: 0;
+}
+
+.cfv-clean-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+/* ── Responsive Viewport Breakpoints ─────────────────────────────────────── */
+
+@media (max-width: 900px) {
+  .cfv-dual-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cfv-topbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

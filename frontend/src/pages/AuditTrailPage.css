@@ -1,0 +1,462 @@
+/* src/pages/AuditTrailPage.css
+   ────────────────────────────
+   Cryptographic Audit Trail & Governance Styling for HALO.
+   Uses approved tokens from index.css.
+*/
+
+.at-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Breadcrumb ──────────────────────────────────────────────────────────── */
+
+.at-breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--halo-font-ui);
+  font-size: 0.8125rem;
+  color: var(--halo-ink-muted);
+  margin-bottom: 1rem;
+}
+
+.at-breadcrumb-link {
+  color: var(--halo-accent);
+  text-decoration: none;
+}
+
+.at-breadcrumb-link:hover {
+  text-decoration: underline;
+}
+
+.at-breadcrumb-sep {
+  color: var(--halo-border);
+}
+
+.at-breadcrumb-active {
+  color: var(--halo-ink-primary);
+  font-weight: 600;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+
+.at-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 24px;
+}
+
+.at-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.at-title {
+  font-family: var(--halo-font-ui);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--halo-ink-primary);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.at-live-tag {
+  font-family: var(--halo-font-ui);
+  font-size: 0.725rem;
+  font-weight: 600;
+  background-color: var(--halo-verified-bg);
+  color: var(--halo-verified-text);
+  border: 1px solid var(--halo-verified-border);
+  padding: 3px 8px;
+  border-radius: var(--halo-radius-pill);
+}
+
+.at-subtitle {
+  font-family: var(--halo-font-ui);
+  font-size: 0.9375rem;
+  color: var(--halo-ink-muted);
+  line-height: 1.45;
+  margin: 0.35rem 0 0 0;
+  max-width: 760px;
+}
+
+.at-header-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.at-refresh-btn {
+  padding: 0.55rem 1.15rem;
+  font-size: 0.875rem;
+}
+
+/* ── Trust Metrics (Dashboard Stat-Card Style with Newsreader Numerals) ──── */
+
+.at-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 24px;
+}
+
+.at-metric-card {
+  background: var(--halo-surface);
+  border: 1px solid var(--halo-border);
+  border-radius: var(--halo-radius-card);
+  padding: 1.25rem 1.35rem;
+  box-shadow: var(--halo-shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.at-metric-card:hover {
+  border-color: var(--halo-accent);
+  transform: translateY(-1px);
+}
+
+.at-metric-label {
+  font-family: var(--halo-font-ui);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--halo-ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.at-metric-value {
+  font-family: var(--halo-font-display);
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--halo-ink-primary);
+  line-height: 1.1;
+}
+
+.at-metric-value.at-text-green {
+  color: var(--halo-verified-text);
+}
+
+.at-metric-value.at-text-amber {
+  color: var(--halo-warning-text);
+}
+
+.at-metric-sub {
+  font-family: var(--halo-font-ui);
+  font-size: 0.75rem;
+  color: var(--halo-ink-muted);
+}
+
+/* ── Controls (Search & Quarantine Filter) ────────────────────────────────── */
+
+.at-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 20px;
+}
+
+.at-search-box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--halo-surface);
+  border: 1px solid var(--halo-border);
+  border-radius: var(--halo-radius-control);
+  padding: 0.45rem 0.85rem;
+  flex: 1;
+  max-width: 480px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.at-search-box:focus-within {
+  border-color: var(--halo-accent);
+  box-shadow: 0 0 0 1px var(--halo-accent);
+}
+
+.at-search-input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: var(--halo-font-ui);
+  font-size: 0.875rem;
+  color: var(--halo-ink-primary);
+  width: 100%;
+}
+
+.at-search-input::placeholder {
+  color: var(--halo-ink-muted);
+}
+
+.at-filter-pills {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.at-filter-btn {
+  font-family: var(--halo-font-ui);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  background: var(--halo-surface);
+  border: 1px solid var(--halo-border);
+  color: var(--halo-ink-secondary);
+  border-radius: var(--halo-radius-pill);
+  padding: 0.35rem 0.75rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.at-filter-btn:hover {
+  background-color: var(--halo-surface-subtle);
+  color: var(--halo-ink-primary);
+}
+
+.at-filter-btn.active {
+  background-color: var(--halo-accent);
+  color: #FFFFFF;
+  border-color: var(--halo-accent);
+  font-weight: 600;
+}
+
+/* ── Cryptographic Table ─────────────────────────────────────────────────── */
+
+.at-table-card {
+  background: var(--halo-surface);
+  border: 1px solid var(--halo-border);
+  border-radius: var(--halo-radius-card);
+  box-shadow: var(--halo-shadow-card);
+  overflow: hidden;
+}
+
+.at-table-wrapper {
+  overflow-x: auto;
+}
+
+.at-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--halo-font-ui);
+  font-size: 0.8125rem;
+}
+
+.at-table th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  background-color: var(--halo-surface-subtle);
+  color: var(--halo-ink-secondary);
+  font-weight: 700;
+  border-bottom: 1px solid var(--halo-border);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.at-table td {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--halo-border-subtle);
+  color: var(--halo-ink-primary);
+  vertical-align: middle;
+}
+
+.at-table-row {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.at-table-row:hover {
+  background-color: var(--halo-surface-subtle);
+}
+
+.at-table-row:last-child td {
+  border-bottom: none;
+}
+
+/* Monospace ID & Hash */
+.at-audit-id-code {
+  font-family: var(--halo-font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--halo-ink-secondary);
+  background-color: var(--halo-surface-subtle);
+  border: 1px solid var(--halo-border-subtle);
+  padding: 2px 6px;
+  border-radius: var(--halo-radius-pill);
+}
+
+.at-hash-code {
+  font-family: var(--halo-font-mono);
+  font-size: 0.75rem;
+  color: var(--halo-ink-muted);
+  cursor: copy;
+  transition: color 0.15s ease;
+}
+
+.at-hash-code:hover {
+  color: var(--halo-accent);
+}
+
+.at-time-mono {
+  font-family: var(--halo-font-mono);
+  font-size: 0.75rem;
+  color: var(--halo-ink-muted);
+}
+
+/* Status Badges */
+.at-seal-pill {
+  font-family: var(--halo-font-ui);
+  font-size: 0.725rem;
+  font-weight: 600;
+  background-color: var(--halo-verified-bg);
+  color: var(--halo-verified-text);
+  border: 1px solid var(--halo-verified-border);
+  padding: 2px 7px;
+  border-radius: var(--halo-radius-pill);
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.at-quarantine-pill {
+  font-family: var(--halo-font-ui);
+  font-size: 0.725rem;
+  font-weight: 600;
+  background-color: var(--halo-failed-bg);
+  color: var(--halo-failed-text);
+  border: 1px solid var(--halo-failed-border);
+  padding: 2px 7px;
+  border-radius: var(--halo-radius-pill);
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+/* ── Inspection Drawer (Matches CasesPage Dossier Modal/Drawer) ──────────── */
+
+.at-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 1.5rem;
+}
+
+.at-modal {
+  background: var(--halo-surface);
+  border: 1px solid var(--halo-border);
+  border-radius: var(--halo-radius-card);
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
+  width: 100%;
+  max-width: 680px;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.at-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--halo-border);
+}
+
+.at-modal-title {
+  font-family: var(--halo-font-ui);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--halo-ink-primary);
+  margin: 0;
+}
+
+.at-modal-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.at-modal-tabs {
+  display: flex;
+  gap: 1.5rem;
+  border-bottom: 1px solid var(--halo-border);
+}
+
+.at-tab-btn {
+  background: none;
+  border: none;
+  padding: 0.5rem 0;
+  font-family: var(--halo-font-ui);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--halo-ink-muted);
+  cursor: pointer;
+  position: relative;
+  transition: color 0.15s ease;
+}
+
+.at-tab-btn.active {
+  color: var(--halo-ink-primary);
+  font-weight: 600;
+}
+
+.at-tab-btn.active::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: var(--halo-accent);
+}
+
+.at-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--halo-border);
+  background-color: var(--halo-surface-subtle);
+}
+
+/* ── Responsive Viewport Breakpoints ─────────────────────────────────────── */
+
+@media (max-width: 992px) {
+  .at-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .at-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 768px) {
+  .at-metrics-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .at-search-box {
+    max-width: none;
+    width: 100%;
+  }
+
+  .at-table-container {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+}

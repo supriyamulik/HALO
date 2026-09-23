@@ -1,14 +1,12 @@
 /**
  * src/pages/LoginPage.jsx
  * ────────────────────────
- * Combined Login / Register page for Nyaya Sahayak.
+ * Redesigned Split-Panel Authentication Gateway for HALO (Nyaya Sahayak).
  *
- * Behaviour:
- *   • Register tab → calls registerUser(), shows success, switches to Login
- *   • Login tab    → calls loginUser(), stores token, confirms with getCurrentUser(),
- *                    then navigates to /dashboard
- *   • Errors       → shows the exact detail string from the backend response
- *   • Loading      → button is disabled and labelled "Please wait…" during requests
+ * Left Panel:  Calm, authoritative deep navy field with editorial headline
+ *              and 3 simple stacked system pillars.
+ * Right Panel: Restrained white form surface with underline-style tab switcher,
+ *              clean bordered inputs, and primary action button.
  */
 
 import { useState } from "react";
@@ -16,9 +14,14 @@ import { useNavigate } from "react-router-dom";
 import { getCurrentUser, loginUser, registerUser } from "../api/client";
 import "./LoginPage.css";
 
-const ROLES = ["LAWYER", "RESEARCHER", "ADMIN", "INSTITUTION_ADMIN"];
+const ROLES = [
+  { value: "LAWYER", label: "Advocate / Counsel" },
+  { value: "RESEARCHER", label: "Judicial Researcher" },
+  { value: "ADMIN", label: "Chambers Administrator" },
+  { value: "INSTITUTION_ADMIN", label: "Institution Admin" },
+];
 
-// ─── Sub-form: Login ───────────────────────────────────────────────────────
+// ─── Sub-form: Login ──────────────────────────────────────────────────────────
 
 function LoginForm({ onSuccess }) {
   const [email, setEmail] = useState("");
@@ -34,11 +37,10 @@ function LoginForm({ onSuccess }) {
     try {
       const { access_token } = await loginUser(email, password);
       localStorage.setItem("access_token", access_token);
-      // Confirm token works before navigating
       await getCurrentUser();
       onSuccess();
     } catch (err) {
-      setError(err.message);
+      setError(err.message || "Invalid credentials. Please verify your email and password.");
     } finally {
       setLoading(false);
     }
@@ -47,17 +49,17 @@ function LoginForm({ onSuccess }) {
   return (
     <form className="auth-form" onSubmit={handleSubmit} noValidate>
       {error && (
-        <div className="alert alert-error" role="alert">
+        <div className="auth-alert auth-alert-error" role="alert">
           {error}
         </div>
       )}
 
-      <div className="field-group">
-        <label htmlFor="login-email">Email</label>
+      <div className="auth-field">
+        <label htmlFor="login-email">Email address</label>
         <input
           id="login-email"
           type="email"
-          placeholder="advocate@example.com"
+          placeholder="advocate@chambers.in"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
@@ -65,8 +67,13 @@ function LoginForm({ onSuccess }) {
         />
       </div>
 
-      <div className="field-group">
-        <label htmlFor="login-password">Password</label>
+      <div className="auth-field">
+        <div className="auth-field-header">
+          <label htmlFor="login-password">Password</label>
+          <a href="#forgot" className="auth-link-forgot" tabIndex="-1">
+            Forgot password?
+          </a>
+        </div>
         <input
           id="login-password"
           type="password"
@@ -78,33 +85,30 @@ function LoginForm({ onSuccess }) {
         />
       </div>
 
-      <div className="login-extras">
-        <label className="checkbox-label">
+      <div className="auth-options">
+        <label className="auth-checkbox-label">
           <input
             type="checkbox"
             checked={rememberMe}
             onChange={(e) => setRememberMe(e.target.checked)}
           />
-          Remember me
+          <span>Remember this workstation</span>
         </label>
-        <a href="#forgot" className="link-muted">
-          Forgot Password?
-        </a>
       </div>
 
       <button
         id="login-submit"
         type="submit"
-        className="btn btn-primary"
+        className="auth-btn-submit"
         disabled={loading}
       >
-        {loading ? "Please wait…" : "LOGIN"}
+        {loading ? "Authenticating…" : "Sign in"}
       </button>
     </form>
   );
 }
 
-// ─── Sub-form: Register ────────────────────────────────────────────────────
+// ─── Sub-form: Register ─────────────────────────────────────────────────────
 
 function RegisterForm({ onRegistered }) {
   const [email, setEmail] = useState("");
@@ -121,13 +125,10 @@ function RegisterForm({ onRegistered }) {
     setLoading(true);
     try {
       await registerUser(email, password, role);
-      setSuccess(
-        "Account created successfully! You can now log in."
-      );
-      // Switch to Login tab after a short delay so user reads the message
-      setTimeout(() => onRegistered(), 1500);
+      setSuccess("Account registered successfully. Redirecting to sign in…");
+      setTimeout(() => onRegistered(), 1400);
     } catch (err) {
-      setError(err.message);
+      setError(err.message || "Registration failed. Please check inputs.");
     } finally {
       setLoading(false);
     }
@@ -136,22 +137,22 @@ function RegisterForm({ onRegistered }) {
   return (
     <form className="auth-form" onSubmit={handleSubmit} noValidate>
       {error && (
-        <div className="alert alert-error" role="alert">
+        <div className="auth-alert auth-alert-error" role="alert">
           {error}
         </div>
       )}
       {success && (
-        <div className="alert alert-success" role="status">
+        <div className="auth-alert auth-alert-success" role="status">
           {success}
         </div>
       )}
 
-      <div className="field-group">
-        <label htmlFor="reg-email">Email</label>
+      <div className="auth-field">
+        <label htmlFor="reg-email">Email address</label>
         <input
           id="reg-email"
           type="email"
-          placeholder="you@example.com"
+          placeholder="counsel@highcourt.gov.in"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
@@ -159,12 +160,12 @@ function RegisterForm({ onRegistered }) {
         />
       </div>
 
-      <div className="field-group">
+      <div className="auth-field">
         <label htmlFor="reg-password">Password</label>
         <input
           id="reg-password"
           type="password"
-          placeholder="Min. 8 characters"
+          placeholder="Minimum 8 characters"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
@@ -172,16 +173,16 @@ function RegisterForm({ onRegistered }) {
         />
       </div>
 
-      <div className="field-group">
-        <label htmlFor="reg-role">Role</label>
+      <div className="auth-field">
+        <label htmlFor="reg-role">Designation / Role</label>
         <select
           id="reg-role"
           value={role}
           onChange={(e) => setRole(e.target.value)}
         >
           {ROLES.map((r) => (
-            <option key={r} value={r}>
-              {r.replace("_", " ")}
+            <option key={r.value} value={r.value}>
+              {r.label}
             </option>
           ))}
         </select>
@@ -190,16 +191,16 @@ function RegisterForm({ onRegistered }) {
       <button
         id="register-submit"
         type="submit"
-        className="btn btn-primary"
+        className="auth-btn-submit"
         disabled={loading}
       >
-        {loading ? "Please wait…" : "CREATE ACCOUNT"}
+        {loading ? "Registering account…" : "Create account"}
       </button>
     </form>
   );
 }
 
-// ─── Page ──────────────────────────────────────────────────────────────────
+// ─── Main Page ──────────────────────────────────────────────────────────────
 
 export default function LoginPage() {
   const [activeTab, setActiveTab] = useState("login");
@@ -214,47 +215,101 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="auth-page">
-      <div className="auth-card">
-        {/* ── Brand header ── */}
-        <div className="auth-brand">
-          <h1 className="brand-title">Nyaya Sahayak</h1>
-          <p className="brand-tagline">
-            AI Assisted Legal Research &amp; Citation Verification
-          </p>
-        </div>
+    <div className="login-layout">
+      {/* ── Left Editorial Panel (~55% width) ── */}
+      <aside className="login-editorial-panel">
+        <div className="editorial-inner">
+          <div className="editorial-brand">
+            <span className="editorial-emblem"></span>
+            <span className="editorial-wordmark">Nyaya Sahayak</span>
+            <span className="editorial-divider">/</span>
+            <span className="editorial-subname">Legal AI Intelligence</span>
+          </div>
 
-        {/* ── Tab toggles ── */}
-        <div className="tab-bar" role="tablist">
-          <button
-            id="tab-login"
-            role="tab"
-            aria-selected={activeTab === "login"}
-            className={`tab-btn ${activeTab === "login" ? "active" : ""}`}
-            onClick={() => setActiveTab("login")}
-          >
-            Login
-          </button>
-          <button
-            id="tab-register"
-            role="tab"
-            aria-selected={activeTab === "register"}
-            className={`tab-btn ${activeTab === "register" ? "active" : ""}`}
-            onClick={() => setActiveTab("register")}
-          >
-            Register
-          </button>
-        </div>
+          <div className="editorial-statement">
+            <h2 className="editorial-headline">
+              Evidence-first legal research for Indian law.
+            </h2>
+            <p className="editorial-subtext">
+              Authoritative statutory retrieval, strict multi-tier citation verification,
+              and hierarchical conflict resolution for advocates and researchers.
+            </p>
+          </div>
 
-        {/* ── Active form ── */}
-        <div className="tab-content">
-          {activeTab === "login" ? (
-            <LoginForm onSuccess={handleLoginSuccess} />
-          ) : (
-            <RegisterForm onRegistered={handleRegistered} />
-          )}
+          <div className="editorial-pillars">
+            <div className="pillar-item">
+              <span className="pillar-title">Hallucination-resistant synthesis</span>
+              <p className="pillar-desc">
+                Every statement is grounded against primary Indian Kanoon and Supreme Court records.
+              </p>
+            </div>
+
+            <div className="pillar-item">
+              <span className="pillar-title">Multi-tier citation verification</span>
+              <p className="pillar-desc">
+                Verifies canonical existence, metadata match, and substantive textual entailment.
+              </p>
+            </div>
+
+            <div className="pillar-item">
+              <span className="pillar-title">High Court vs. Supreme Court conflict detection</span>
+              <p className="pillar-desc">
+                Identifies forum hierarchy divergences and binding Article 141 precedential authority.
+              </p>
+            </div>
+          </div>
+
+          <div className="editorial-footer">
+            <span>Supreme Court of India &amp; High Court Jurisprudence</span>
+          </div>
         </div>
-      </div>
+      </aside>
+
+      {/* ── Right Form Panel ── */}
+      <main className="login-form-panel">
+        <div className="form-container">
+          <div className="form-header">
+            <h1 className="form-title">
+              {activeTab === "login" ? "Sign in" : "Create account"}
+            </h1>
+            <p className="form-subtitle">
+              {activeTab === "login"
+                ? "Enter your credentials to access your legal workspace."
+                : "Register your advocate profile to begin verified legal research."}
+            </p>
+          </div>
+
+          {/* Underline-style tab toggle */}
+          <div className="tab-nav" role="tablist">
+            <button
+              id="tab-login"
+              role="tab"
+              aria-selected={activeTab === "login"}
+              className={`tab-link ${activeTab === "login" ? "active" : ""}`}
+              onClick={() => setActiveTab("login")}
+            >
+              Sign in
+            </button>
+            <button
+              id="tab-register"
+              role="tab"
+              aria-selected={activeTab === "register"}
+              className={`tab-link ${activeTab === "register" ? "active" : ""}`}
+              onClick={() => setActiveTab("register")}
+            >
+              Register
+            </button>
+          </div>
+
+          <div className="form-body">
+            {activeTab === "login" ? (
+              <LoginForm onSuccess={handleLoginSuccess} />
+            ) : (
+              <RegisterForm onRegistered={handleRegistered} />
+            )}
+          </div>
+        </div>
+      </main>
     </div>
   );
 }

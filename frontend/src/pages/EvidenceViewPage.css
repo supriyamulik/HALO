@@ -1,0 +1,614 @@
+/* src/pages/EvidenceViewPage.css
+   ──────────────────────────────
+   Evidence & Passage Provenance Styling for HALO.
+   Uses approved tokens from index.css.
+*/
+
+.ev-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Top Bar ─────────────────────────────────────────────────────────────── */
+
+.ev-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--halo-border);
+  margin-bottom: 24px;
+}
+
+.ev-header-left {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.ev-back-btn {
+  font-family: var(--halo-font-ui);
+  font-size: 0.85rem;
+  padding: 0.4rem 0.65rem;
+}
+
+.ev-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.ev-title {
+  font-family: var(--halo-font-ui);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--halo-ink-primary);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.ev-query-badge {
+  background-color: var(--halo-surface-subtle);
+  border: 1px solid var(--halo-border);
+  border-radius: var(--halo-radius-pill);
+  padding: 2px 7px;
+  font-family: var(--halo-font-mono);
+  font-size: 0.725rem;
+  color: var(--halo-ink-secondary);
+}
+
+/* ── 4-Tier Provenance Stepper ───────────────────────────────────────────── */
+
+.ev-stepper-card {
+  background: var(--halo-surface);
+  border: 1px solid var(--halo-border);
+  border-radius: var(--halo-radius-card);
+  padding: 1rem 1.5rem;
+  box-shadow: var(--halo-shadow-card);
+  margin-bottom: 24px;
+}
+
+.ev-stepper-track {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.ev-stepper-node {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  gap: 0.65rem;
+  position: relative;
+}
+
+.ev-stepper-node:last-child {
+  flex: none;
+}
+
+.ev-node-marker {
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--halo-font-ui);
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition: all 0.15s ease;
+  z-index: 2;
+}
+
+.ev-node-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.ev-node-label {
+  font-family: var(--halo-font-ui);
+  font-size: 0.725rem;
+  font-weight: 600;
+  color: var(--halo-ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.ev-node-val {
+  font-family: var(--halo-font-ui);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--halo-ink-primary);
+  margin-top: 1px;
+}
+
+/* Stepper States */
+.ev-step-pending .ev-node-marker {
+  background: var(--halo-surface);
+  border: 1px solid var(--halo-border);
+  color: var(--halo-ink-muted);
+}
+
+.ev-step-active .ev-node-marker {
+  background: var(--halo-accent);
+  border: 1px solid var(--halo-accent);
+  color: #FFFFFF;
+}
+
+.ev-step-active .ev-node-val {
+  color: var(--halo-accent);
+}
+
+.ev-step-completed .ev-node-marker {
+  background: var(--halo-accent);
+  border: 1px solid var(--halo-accent);
+  color: #FFFFFF;
+}
+
+.ev-stepper-connector {
+  flex: 1;
+  height: 2px;
+  background-color: var(--halo-border-subtle);
+  margin: 0 0.75rem;
+}
+
+.ev-stepper-connector.connector-done {
+  background-color: var(--halo-accent);
+}
+
+/* ── Dual-Pane Layout ────────────────────────────────────────────────────── */
+
+.ev-dual-pane-layout {
+  display: grid;
+  grid-template-columns: 340px minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+/* Left Pane: Claims List */
+.ev-claims-pane {
+  background: var(--halo-surface);
+  border: 1px solid var(--halo-border);
+  border-radius: var(--halo-radius-card);
+  padding: 1.25rem;
+  box-shadow: var(--halo-shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.ev-pane-header {
+  border-bottom: 1px solid var(--halo-border-subtle);
+  padding-bottom: 0.75rem;
+}
+
+.ev-pane-title {
+  font-family: var(--halo-font-ui);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--halo-ink-primary);
+  margin: 0 0 0.2rem 0;
+}
+
+.ev-pane-subtitle {
+  font-family: var(--halo-font-ui);
+  font-size: 0.75rem;
+  color: var(--halo-ink-muted);
+}
+
+.ev-claims-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  max-height: calc(100vh - 280px);
+  overflow-y: auto;
+}
+
+.ev-claim-item {
+  padding: 0.85rem;
+  border: 1px solid var(--halo-border);
+  border-radius: var(--halo-radius-control);
+  background: var(--halo-surface);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  user-select: none;
+}
+
+.ev-claim-item:hover {
+  border-color: var(--halo-border);
+  background-color: var(--halo-surface-subtle);
+}
+
+.ev-claim-item.selected {
+  border-color: var(--halo-accent);
+  background-color: var(--halo-accent-subtle);
+}
+
+.ev-claim-item-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ev-claim-num {
+  font-family: var(--halo-font-mono);
+  font-size: 0.725rem;
+  font-weight: 600;
+  color: var(--halo-ink-muted);
+}
+
+.ev-claim-text {
+  font-family: var(--halo-font-ui);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--halo-ink-primary);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.ev-claim-cite {
+  display: flex;
+  align-items: center;
+  font-family: var(--halo-font-ui);
+  font-size: 0.725rem;
+  color: var(--halo-ink-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Right Pane: Passage & Deep Inspector ────────────────────────────────── */
+
+.ev-passage-pane {
+  display: flex;
+  flex-direction: column;
+}
+
+.ev-passage-card {
+  background: var(--halo-surface);
+  border: 1px solid var(--halo-border);
+  border-radius: var(--halo-radius-card);
+  padding: 1.5rem;
+  box-shadow: var(--halo-shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.ev-passage-meta-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid var(--halo-border-subtle);
+  padding-bottom: 1.15rem;
+}
+
+.ev-source-title-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.ev-source-scale-icon {
+  color: var(--halo-accent);
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+
+.ev-authority-title {
+  font-family: var(--halo-font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--halo-ink-primary);
+  margin: 0 0 0.35rem 0;
+  line-height: 1.3;
+}
+
+.ev-citation-line {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-family: var(--halo-font-ui);
+  font-size: 0.8125rem;
+  color: var(--halo-ink-muted);
+}
+
+.ev-citation-code {
+  font-family: var(--halo-font-mono);
+  font-size: 0.775rem;
+  color: var(--halo-ink-primary);
+  font-weight: 500;
+}
+
+.ev-meta-sep {
+  opacity: 0.4;
+}
+
+.ev-copy-btn {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.8125rem;
+  flex-shrink: 0;
+}
+
+/* Deep Inspector Metadata Tags */
+.ev-inspector-meta-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.inspector-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background-color: var(--halo-surface-subtle);
+  border: 1px solid var(--halo-border);
+  border-radius: var(--halo-radius-pill);
+  padding: 3px 8px;
+  font-family: var(--halo-font-ui);
+  font-size: 0.725rem;
+}
+
+.inspector-tag-label {
+  font-weight: 600;
+  color: var(--halo-ink-muted);
+}
+
+.inspector-tag-val {
+  font-weight: 600;
+  color: var(--halo-ink-primary);
+}
+
+.inspector-tag-mono {
+  font-family: var(--halo-font-mono);
+  font-size: 0.725rem;
+  color: var(--halo-ink-primary);
+}
+
+.currency-tag {
+  color: var(--halo-verified-text);
+  background-color: var(--halo-verified-bg);
+  border-color: var(--halo-verified-border);
+  font-weight: 600;
+}
+
+.currency-dot {
+  font-size: 0.6rem;
+}
+
+/* Proposition Reference */
+.ev-proposition-box {
+  background-color: var(--halo-surface-subtle);
+  border-left: 3px solid var(--halo-border);
+  padding: 0.75rem 1rem;
+  border-radius: 0 var(--halo-radius-control) var(--halo-radius-control) 0;
+}
+
+.ev-proposition-label {
+  font-family: var(--halo-font-ui);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--halo-ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.ev-proposition-text {
+  font-family: var(--halo-font-ui);
+  font-size: 0.85rem;
+  color: var(--halo-ink-secondary);
+  line-height: 1.45;
+  margin: 0;
+  font-style: italic;
+}
+
+/* ── Legal Passage Text Box with Accent Anchor Highlight ─────────────────── */
+
+.ev-text-viewer {
+  border: 1px solid var(--halo-border);
+  border-radius: var(--halo-radius-control);
+  background-color: var(--halo-surface);
+  overflow: hidden;
+}
+
+.ev-text-viewer-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--halo-surface-subtle);
+  border-bottom: 1px solid var(--halo-border);
+  padding: 0.5rem 0.85rem;
+}
+
+.ev-viewer-title {
+  font-family: var(--halo-font-ui);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--halo-ink-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.ev-viewer-anchor {
+  font-family: var(--halo-font-mono);
+  font-size: 0.75rem;
+  color: var(--halo-ink-muted);
+}
+
+.ev-text-content {
+  padding: 1.15rem 1.25rem;
+  font-family: var(--halo-font-ui);
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  color: var(--halo-ink-primary);
+}
+
+/* Refined Anchor Highlight: Subtle Accent Bg + Accent Left Border */
+.ev-text-highlight {
+  background-color: var(--halo-accent-subtle);
+  color: var(--halo-ink-primary);
+  border-left: 3px solid var(--halo-accent);
+  padding: 0.15rem 0.45rem;
+  border-radius: 2px;
+  font-weight: 500;
+}
+
+/* ── Neural-Symbolic Check Inspector (Calm List Rows, No Box-in-Box) ─────── */
+
+.ev-checks-inspector {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  border-top: 1px solid var(--halo-border-subtle);
+  padding-top: 1rem;
+}
+
+.ev-checks-title {
+  font-family: var(--halo-font-ui);
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--halo-ink-primary);
+  margin: 0;
+}
+
+.ev-checks-list {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--halo-border-subtle);
+  border-bottom: 1px solid var(--halo-border-subtle);
+}
+
+.ev-check-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--halo-border-subtle);
+}
+
+.ev-check-row:last-child {
+  border-bottom: none;
+}
+
+.check-icon-success {
+  color: var(--halo-verified-text);
+  flex-shrink: 0;
+}
+
+.check-row-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 0.15rem;
+}
+
+.check-row-label {
+  font-family: var(--halo-font-ui);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--halo-ink-primary);
+}
+
+.check-row-desc {
+  font-family: var(--halo-font-ui);
+  font-size: 0.75rem;
+  color: var(--halo-ink-muted);
+}
+
+.check-row-mono-val {
+  font-family: var(--halo-font-mono);
+  font-size: 0.75rem;
+  color: var(--halo-ink-secondary);
+  background-color: var(--halo-surface-subtle);
+  border: 1px solid var(--halo-border);
+  padding: 2px 7px;
+  border-radius: var(--halo-radius-pill);
+  white-space: nowrap;
+}
+
+/* ── Card Footer Actions ─────────────────────────────────────────────────── */
+
+.ev-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-top: 1px solid var(--halo-border);
+  padding-top: 1.15rem;
+  flex-wrap: wrap;
+}
+
+.ev-conflict-btn {
+  color: var(--halo-conflict-text);
+  border-color: var(--halo-conflict-border);
+  background-color: var(--halo-conflict-bg);
+}
+
+.ev-conflict-btn:hover {
+  background-color: var(--halo-conflict-border);
+}
+
+/* ── Empty & Loading States ──────────────────────────────────────────────── */
+
+.ev-empty-selection {
+  background: var(--halo-surface);
+  border: 1px solid var(--halo-border);
+  border-radius: var(--halo-radius-card);
+  padding: 4rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: var(--halo-ink-muted);
+  text-align: center;
+}
+
+.empty-icon {
+  opacity: 0.4;
+}
+
+.ev-loading-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+  gap: 1rem;
+  color: var(--halo-ink-muted);
+  font-size: 0.9rem;
+}
+
+/* ── Responsive Viewport Breakpoints ─────────────────────────────────────── */
+
+@media (max-width: 960px) {
+  .ev-dual-pane-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .ev-topbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .ev-stepper-node .ev-node-info {
+    display: none;
+  }
+}

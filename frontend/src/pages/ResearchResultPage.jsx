@@ -14,20 +14,11 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { getResearchResult } from "../api/researchApi";
 import AppShell from "../components/AppShell";
+import PageHeader from "../components/PageHeader";
+import StatusBadge from "../components/StatusBadge";
 import "./ResearchResultPage.css";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-
-const STATUS_CONFIG = {
-  supported: { label: "VERIFIED",  cls: "badge-verified" },
-  warning:   { label: "WARNING",   cls: "badge-warning"  },
-  failed:    { label: "FAILED",    cls: "badge-failed"   },
-};
-
-function statusBadge(status) {
-  const cfg = STATUS_CONFIG[status] ?? { label: status.toUpperCase(), cls: "badge-unknown" };
-  return <span className={`claim-status-badge ${cfg.cls}`}>{cfg.label}</span>;
-}
 
 function confidenceColor(score) {
   if (score >= 0.8) return "bar-green";
@@ -131,18 +122,27 @@ function MetricBar({ label, score }) {
 
 // ─── Claim block ──────────────────────────────────────────────────────────────
 
-function ClaimBlock({ claim }) {
-  const { claim_text, verification_status, citation } = claim;
+function ClaimBlock({ claim, queryId }) {
+  const navigate = useNavigate();
+  const { claim_text, verification_status, citation, claim_id } = claim;
 
   return (
-    <div className={`claim-block claim-block--${verification_status}`}>
+    <div
+      className={`claim-block claim-block--${verification_status}`}
+      style={{ cursor: "pointer" }}
+      onClick={() => navigate(`/research/${queryId}/evidence?claimId=${claim_id}`)}
+      title="Click to inspect authoritative evidence and exact passage anchor"
+    >
       <div className="claim-block-header">
-        {statusBadge(verification_status)}
+        <StatusBadge status={verification_status} />
         {citation && (
           <span className="claim-citation-pill">
             {citation.case_name} · {citation.citation_no}
           </span>
         )}
+        <span className="claim-inspect-hint">
+          Inspect Passage &rarr;
+        </span>
       </div>
       <p className="claim-text">{claim_text}</p>
       {citation?.paragraph && (
@@ -154,7 +154,8 @@ function ClaimBlock({ claim }) {
 
 // ─── Source card ──────────────────────────────────────────────────────────────
 
-function SourceCard({ source, index }) {
+function SourceCard({ source, index, queryId }) {
+  const navigate = useNavigate();
   const relevancePct = Math.round((source.relevance ?? 0) * 100);
   const colorCls = confidenceColor(source.relevance ?? 0);
 
@@ -184,8 +185,8 @@ function SourceCard({ source, index }) {
         <button
           className="btn btn-outline source-view-btn"
           id={`view-source-${source.id}`}
-          onClick={() => {}}
-          title="View source document"
+          onClick={() => navigate(`/research/${queryId}/evidence`)}
+          title="Inspect authoritative legal source passage"
         >
           View Source
         </button>
@@ -260,6 +261,9 @@ export default function ResearchResultPage() {
     <AppShell user={null}>
       <div className="rrp-page">
 
+        {/* ── Page Header ── */}
+        <PageHeader title="Research Result" />
+
         {/* ── Top bar ──────────────────────────────────────────────────── */}
         <div className="rrp-topbar">
           <button
@@ -272,34 +276,64 @@ export default function ResearchResultPage() {
 
           <div className="rrp-topbar-center">
             <span className="rrp-query-label">{queryLabel}</span>
-            <span className={`rrp-status-pill rrp-status-pill--${overallStatus}`}>
-              {conflicts_detected
-                ? "Conflicts Detected"
-                : confidenceLabel(confidence_score) + " Confidence"}
-            </span>
+            <StatusBadge
+              status={overallStatus}
+              label={
+                conflicts_detected
+                  ? "Conflicts Detected"
+                  : `${confidenceLabel(confidence_score)} Confidence`
+              }
+            />
           </div>
 
-          <Link
-            to={`/research/${queryId}/verify`}
-            className="btn rrp-verify-btn"
-            id="verify-all-claims-btn"
-          >
-            Verify All Claims →
-          </Link>
+          <div className="rrp-topbar-actions">
+            <Link
+              to={`/research/${queryId}/evidence`}
+              className="btn btn-secondary"
+              id="view-evidence-btn"
+            >
+              Inspect Evidence &rarr;
+            </Link>
+            {conflicts_detected && (
+              <Link
+                to={`/research/${queryId}/conflict`}
+                className="btn btn-outline"
+                id="inspect-conflict-btn"
+              >
+                ⚡ Conflict View
+              </Link>
+            )}
+            <Link
+              to={`/research/${queryId}/verify`}
+              className="btn btn-primary"
+              id="verify-all-claims-btn"
+            >
+              Verify All Claims &rarr;
+            </Link>
+          </div>
         </div>
 
         {/* ── Conflict banner ───────────────────────────────────────────── */}
         {conflicts_detected && (
-          <div className="conflict-banner" role="alert">
-            <span className="conflict-banner-icon">⚠</span>
-            <div>
-              <strong>Conflicting authorities detected</strong>
-              <p>
-                This result contains claims from sources that contradict each
-                other. Review each claim carefully before relying on this
-                analysis.
-              </p>
+          <div className="conflict-banner" role="alert" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div style={{ display: "flex", gap: "0.75rem", alignItems: "flex-start" }}>
+              <span className="conflict-banner-icon">⚠</span>
+              <div>
+                <strong>Conflicting authorities detected</strong>
+                <p>
+                  This result contains claims from sources that contradict each
+                  other. Review each claim carefully before relying on this
+                  analysis.
+                </p>
+              </div>
             </div>
+            <Link
+              to={`/research/${queryId}/conflict`}
+              className="btn btn-outline"
+              style={{ whiteSpace: "nowrap", marginLeft: "1rem" }}
+            >
+              Inspect Conflict View &rarr;
+            </Link>
           </div>
         )}
 
@@ -338,7 +372,7 @@ export default function ResearchResultPage() {
                 </h3>
                 <div className="rrp-claims-list">
                   {claims.map((claim) => (
-                    <ClaimBlock key={claim.claim_id} claim={claim} />
+                    <ClaimBlock key={claim.claim_id} claim={claim} queryId={queryId} />
                   ))}
                 </div>
               </>
@@ -355,7 +389,7 @@ export default function ResearchResultPage() {
 
               <div className="rrp-sources-list">
                 {uniqueSources.map((src, i) => (
-                  <SourceCard key={src.id} source={src} index={i} />
+                  <SourceCard key={src.id} source={src} index={i} queryId={queryId} />
                 ))}
               </div>
             </div>

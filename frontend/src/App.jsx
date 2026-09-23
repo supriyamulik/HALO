@@ -16,8 +16,13 @@ import LoginPage from "./pages/LoginPage";
 import ResearchPage from "./pages/ResearchPage";
 import ResearchResultPage from "./pages/ResearchResultPage";
 import PlaceholderPage from "./pages/PlaceholderPage";
-import AppShell from "./components/AppShell";
 import ClaimVerificationPage from "./pages/ClaimVerificationPage";
+import HistoryPage from "./pages/HistoryPage";
+import EvidenceViewPage from "./pages/EvidenceViewPage";
+import ConflictViewPage from "./pages/ConflictViewPage";
+import AuditTrailPage from "./pages/AuditTrailPage";
+import CasesPage from "./pages/CasesPage";
+import DraftingPage from "./pages/DraftingPage";
 
 export default function App() {
   return (
@@ -66,12 +71,37 @@ export default function App() {
       />
 
       <Route
+        path="/research/:queryId/evidence"
+        element={
+          <ProtectedRoute>
+            <EvidenceViewPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/research/:queryId/conflict"
+        element={
+          <ProtectedRoute>
+            <ConflictViewPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
         path="/cases"
         element={
           <ProtectedRoute>
-            <AppShell user={null}>
-              <PlaceholderPage title="Cases" />
-            </AppShell>
+            <CasesPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/drafts"
+        element={
+          <ProtectedRoute>
+            <DraftingPage />
           </ProtectedRoute>
         }
       />
@@ -80,9 +110,25 @@ export default function App() {
         path="/history"
         element={
           <ProtectedRoute>
-            <AppShell user={null}>
-              <PlaceholderPage title="History" />
-            </AppShell>
+            <HistoryPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/admin/audit"
+        element={
+          <ProtectedRoute>
+            <AuditTrailPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/audit"
+        element={
+          <ProtectedRoute>
+            <AuditTrailPage />
           </ProtectedRoute>
         }
       />

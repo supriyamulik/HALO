@@ -1,0 +1,354 @@
+HALO: A Hallucination-Aware Retrieval and Verification Framework for AI-Assisted Legal Research
+(Nyaya Sahayak)
+1. Introduction
+HALO (Hallucination-Aware Legal Output) is an AI-assisted legal research and workflow platform designed to help lawyers search judgments, find relevant legal provisions, get case summaries, and answer legal research questions without depending on a single AI model to answer everything from memory. In its product/user-facing form, the system is also referred to as Nyaya Sahayak. HALO is the name used for the underlying research framework and technical architecture.
+Instead of trusting an AI model blindly, the system first searches real legal sources (judgments, Acts, sections) to find actual evidence, and only then lets the AI generate an answer using that evidence. After the answer is generated, every claim and citation in it is checked again to make sure it's actually supported by the retrieved evidence. If something isn't supported, it gets flagged instead of being shown to the lawyer as fact.
+At the core of the system is a Query & Verification Pipeline, which acts as the central controller. It takes the lawyer's question, decides what needs to be searched, retrieves the right legal documents, ranks them by relevance, generates a grounded answer, and finally verifies every part of that answer before sending it back.
+Each major component of the system — search, ranking, answer generation, and verification — works as an independent, modular service, making the system easier to test, scale, and improve piece by piece.
+The system uses Qdrant as a shared vector database for storing embeddings of legal documents, and it uses an LLM (either a cloud model like OpenAI/Gemini, or a local model run through Ollama) for generating answers.
+To support day-to-day legal practice, the platform also includes basic case-workflow features like a dashboard, hearing-date tracking, task management, and document storage.
+The primary objective of HALO is to give lawyers a legal research tool that is fast and easy to use like a chatbot, but trustworthy like a proper legal database — because every answer is backed by real, checkable evidence.
+Naming Convention
+This project uses two names deliberately, for two different audiences:
+HALO — the research/technical name, used in the synopsis title, the paper, and technical discussions of the retrieval and verification architecture.
+Nyaya Sahayak — the product/user-facing name, used when describing the system to lawyers, in demos, and in general conversation.
+Both names refer to the same underlying system.
+2. Problem Statement
+General-purpose LLMs are increasingly used for legal research, but they generate answers primarily from pretrained knowledge rather than from verified, current legal sources. This creates a serious risk in the legal domain: models can fabricate case names, misstate statutory provisions, cite judgments that do not exist, or apply outdated law without indicating that the position has changed.
+Existing legal-tech search tools such as keyword-based judgment portals are reliable but limited — they require the lawyer to already know the right terms, sections, or case names, and they do not synthesize an answer across multiple sources. Conversely, LLM-based assistants can synthesize fluent answers but do not guarantee that the underlying facts, sections, or citations are accurate or that they currently reflect Indian law.
+Building a trustworthy legal research assistant therefore raises several open problems:
+How should a legal query be understood and mapped onto a common retrieval representation?
+How can keyword search and semantic search be combined so that both precise statutory citations and conceptually similar judgments are retrieved?
+How should the retrieved evidence be reranked so that the most relevant Acts, sections, and judgments reach the LLM?
+How can an LLM-generated legal claim be checked against the retrieved evidence, rather than trusted outright?
+How can the system verify that a cited judgment or provision actually exists in the authoritative corpus?
+How should unsupported or unverifiable claims be flagged or withheld from the lawyer?
+How can retrieval quality and answer trustworthiness be measured and compared across different retrieval and verification strategies?
+Therefore, there is a need for a legal research system that treats authoritative legal sources as evidence, combines keyword and semantic retrieval, and verifies LLM-generated claims and citations before presenting an answer, rather than relying on an LLM's unverified output. HALO addresses this gap by combining hybrid legal retrieval with an explicit claim-and-citation verification stage.
+3. Domain Case Study: Pooja Ramesh Singh v. Jammu and Kashmir Bank Ltd.
+Citation & Bench
+2026 INSC 668 | Supreme Court of India | Bench: Justices Pamidighantam Sri Narasimha and Alok Aradhe | Decided: 2 July 2026
+Background
+The case arose from insolvency proceedings under Section 7 of the Insolvency and Bankruptcy Code, 2016. Jammu and Kashmir Bank had initiated proceedings against Essel Infraprojects Ltd. (as corporate guarantor) over a loan default of ₹87.43 crore. The NCLT admitted the application and the NCLAT upheld it on appeal.
+The Tribunal (NCLT) relied on six purported Supreme Court precedents to support its reasoning — all six were found, on independent verification by the Supreme Court, to be fabricated in some way: some citations did not exist at all, some pointed to the wrong case, and some were correctly cited but the quoted paragraph did not exist in the actual judgment. The bank's own counsel denied citing these cases, indicating the Tribunal itself likely introduced them through its own AI-assisted research — and the fabrication went undetected through a full round of appellate review at the NCLAT.
+What the Supreme Court held
+A decision resting on fake or hallucinated material is “no decision in the eyes of the law” and amounts to a subversion of the rule of law.
+This holds true even if the hallucinated material had only an indirect bearing on the outcome — even “an iota” of fake material is enough to require the decision be set aside.
+Courts must adopt a zero-tolerance approach to producing, citing, or using AI-generated precedents without verification.
+Citing unverified AI-generated case law is professional misconduct on the part of an advocate, a judge relying on such material is a serious lapse.
+The Bar Council of India was directed to constitute a committee and frame guiding principles and disciplinary consequences on this issue.
+The Court clarified that the ruling does not restrict the legitimate use of AI in legal work — only the presentation or reliance on unverified fake material as if it were genuine precedent.
+The NCLT and NCLAT orders were set aside, and the original Section 7 application was restored for fresh adjudication. The judgment also references a parallel UK case (Anthony Malcolm Cork & Anor v. Mark Smith, [2026] EWHC 1199 (Ch)), where a law firm submitted a fabricated AI-generated statutory quote in a court filing — showing this is not an isolated or India-specific failure mode.
+Relevance to HALO
+This case moves the project's problem statement from a hypothetical risk to a documented, judicially recognized failure with real institutional consequences. It directly motivates three design requirements for the system: citation verification must check existence, citation-number correctness, and passage-level support (not existence alone),verification must be exhaustive across every claim rather than sampled, reflecting the zero-tolerance judicial standard and the system should be usable by, and protect, institutional users (tribunals, judicial staff) as well as practising lawyers, since the fabrication in this case likely originated on the adjudicating side.
+4. Objectives
+The objectives below are derived both from the general problem of AI hallucination in legal research, and specifically from the failure modes identified in the Pooja Ramesh Singh case study above.
+To design a legal research assistant for lawyers, tribunal staff, and legal researchers, supporting English-language legal queries.
+To build a hybrid retrieval pipeline combining BM25 keyword search with semantic (vector) search over authoritative Indian legal sources — Supreme Court and High Court judgments, and Central/State legislation from India Code.
+To ingest and structure a verifiable legal knowledge base, including case metadata (case name, citation number, court, date, paragraph numbers) alongside full judgment text, so citations can be checked for structural correctness, not just existence.
+To implement a reranking stage (cross-encoder) ensuring the most relevant retrieved evidence, not just the most keyword-similar, reaches the answer-generation stage.
+To implement a Legal RAG pipeline in which the LLM generates answers grounded in retrieved evidence, with each claim traceable back to a specific source passage at generation time.
+To design a three-tier claim-and-citation verification module checking, for every citation: whether the cited case/section exists in the corpus, whether the citation number correctly corresponds to the case name and paragraph, and whether the quoted or paraphrased text is actually supported by the retrieved passage.
+To perform exhaustive, per-answer claim verification — checking every claim rather than a sampled subset — and to flag an answer if any claim is unsupported, reflecting the zero-tolerance standard established by Indian courts.
+To generate a per-claim verification status and an overall confidence score for every answer, so the lawyer can see which parts of the response are evidence-backed before relying on them.
+To provide supporting case-workflow features — dashboard, hearing-date tracking, task management, document management, and draft generation — making the system usable in everyday legal practice.
+To evaluate the system empirically by comparing LLM-only, vector-only RAG, hybrid RAG, and hybrid RAG with three-tier verification, measuring retrieval precision/recall, citation accuracy, unsupported-claim rate, hallucination rate, answer correctness, and response latency.
+To validate the system's design against the documented real-world failure case (Pooja Ramesh Singh v. Jammu and Kashmir Bank Ltd., 2026 INSC 668), by constructing test scenarios that reproduce the specific citation-fabrication patterns identified by the Supreme Court, and confirming the verification module correctly flags them.
+5. Overall System Architecture
+Fig.1  System Architecture
+6. Core Components
+1. Query Processing Component
+Purpose
+Understands the lawyer's question and prepares it for searching.
+Responsibilities
+Clean and normalize the lawyer's question
+Identify legal entities mentioned (Act names, section numbers, case names)
+Prepare the question in a form the search system can use
+Input
+Lawyer's question (typed in plain English)
+Output
+A cleaned, structured version of the question ready for search
+Components Used
+Component
+Purpose
+Text processing library
+Clean and normalize text
+Named-entity recognition
+Detect Act names, section numbers, case names
+FastAPI
+Expose this step as an API
+2. Hybrid Search Component
+Purpose
+Finds the most relevant judgments, sections, and Acts related to the lawyer's question.
+Responsibilities
+Run a keyword-based search for exact matches
+Run a semantic/meaning-based search for conceptually similar content
+Combine and remove duplicate results from both searches
+Input
+Processed legal question
+Output
+A list of candidate judgments, sections, and Acts
+Components Used
+Component
+Purpose
+BM25 (keyword search library)
+Find exact keyword/citation matches
+Sentence embedding model
+Convert text into vectors for meaning-based search
+Qdrant
+Store and search document vectors
+3.Reranking Component
+Purpose
+Improves the order of search results so the most relevant ones are used first.
+Responsibilities
+Score each candidate result against the lawyer's question
+Pick only the top few most relevant results
+Input
+Candidate judgments/sections from hybrid search
+Output
+A shorter, ranked list of the most relevant evidence
+Components Used
+Component
+Purpose
+Cross-encoder model
+Re-score and rank candidates accurately
+4 Legal RAG (Answer Generation) Component
+Purpose
+Writes an answer to the lawyer's question, using only the retrieved evidence.
+Responsibilities
+Combine the lawyer's question with the top evidence into a prompt
+Ask the LLM to generate an answer using that evidence
+Attach source details (case name, court, date, citation) to the answer
+Input
+Lawyer's question
+Top-ranked legal evidence
+Output
+Draft answer with attached sources
+Components Used
+Component
+Purpose
+LangChain / LlamaIndex
+Manage the prompt-building and generation workflow
+Ollama (or cloud LLM)
+Generate the actual answer text
+5 Claim & Citation Verification Component
+Purpose
+Double-checks the generated answer to make sure nothing in it is made up.
+Responsibilities
+Break the answer down into individual claims
+Check whether each cited case/section actually exists
+Check whether the citation number matches the actual case
+Check whether the quoted or paraphrased text is actually supported by the real source
+Flag or remove anything that fails these checks
+Calculate an overall confidence score for the answer
+Input
+Draft answer with citations
+Output
+Verified answer, with each claim marked supported/flagged/rejected, plus a confidence score
+Components Used
+Component
+Purpose
+LLM (for claim extraction)
+Break the answer into individual checkable claims
+Semantic similarity check
+Compare each claim against the retrieved source text
+Metadata lookup
+Confirm case name, citation number, and paragraph all match
+7. RAG Pipeline
+The Retrieval-Augmented Generation (RAG) pipeline is what allows the system to generate answers that are actually grounded in real legal documents, instead of the LLM just making something up from its training data.
+Component
+Purpose
+Embedding Model
+Converts legal text into vector form so it can be searched by meaning
+Qdrant
+Stores and retrieves these document vectors
+Hybrid Search
+Finds relevant judgments/sections using both keyword and meaning-based search
+Reranker
+Reorders results so the best evidence is used first
+Prompt Builder
+Combines the question and retrieved evidence into a single prompt for the LLM
+Ollama / Cloud LLM
+Generates the final answer text
+Technologies Used
+LangChain / LlamaIndex
+Qdrant
+Sentence embedding models (English)
+Cross-encoder reranker
+BM25 keyword search
+8. Features to be Implemented
+1. User Authentication
+Lawyer registration and login
+Secure authentication
+Session management
+2. Legal Research Assistant
+Ask legal questions in plain English
+Get answers backed by real case law and statutes
+Support follow-up questions
+View case name, court, date, section, and citation for every source used
+3. Hybrid Legal Document Search
+Combine keyword search and semantic search
+Compare keyword-only, semantic-only, and hybrid search results
+4. Legal RAG (Grounded Answer Generation)
+Generate answers using retrieved evidence, not just AI memory
+Attach sources to every answer
+5. Claim & Citation Verification
+Check whether each cited case/section actually exists
+Check whether the citation number is correct
+Check whether the quoted text matches the real source
+Flag or reject unsupported claims
+Show a confidence score for every answer
+6. Case Workflow Management
+Case dashboard with hearing dates and pending tasks
+Document upload and management
+Case and hearing summaries
+Draft generation for common documents
+Notifications and reminders
+7. Runtime Monitoring
+Track response time for each query
+Track how often citations are verified successfully
+Track system errors
+8. Docker-Based Deployment
+Run the backend, database, and vector store in separate containers
+Deploy the full system using Docker Compose
+9. Local LLM Support
+Run the LLM locally using Ollama
+Support answering without depending on a cloud API
+10. Logging & Execution History
+Store every lawyer query
+Store retrieval results and verification outcomes
+Log errors for debugging
+Maintain history for later evaluation
+11. Benchmarking Module
+Compare plain LLM answers vs. RAG vs. hybrid RAG vs. hybrid RAG + verification
+Measure citation accuracy, unsupported-claim rate, and response time
+9. Technology Stack
+Category
+Technology / Package
+Purpose
+Frontend
+React.js
+Build the web interface
+Vite
+Fast frontend development
+Tailwind CSS
+Styling
+react-router-dom
+Routing
+axios
+API communication
+lucide-react
+Icons
+recharts
+Charts for evaluation dashboard
+react-hot-toast
+Notifications
+Backend
+FastAPI
+Build REST APIs
+Python 3.11+
+Backend programming
+uvicorn
+Run the FastAPI server
+python-multipart
+Handle file uploads
+pydantic
+Request and response validation
+python-dotenv
+Load environment variables
+requests / httpx
+Make HTTP / async API requests
+Search
+BM25 (rank-bm25)
+Keyword-based retrieval
+Embeddings
+Sentence Transformers
+Convert text into vectors
+Reranking
+Cross-Encoder
+Reorder retrieved results
+Vector Database
+Qdrant (qdrant-client)
+Store and search document embeddings
+RAG Framework
+LangChain / LlamaIndex
+Build the retrieval and generation pipeline
+langchain-core
+Core LangChain components
+langchain-community
+Community integrations
+langchain-ollama
+Connect LangChain with Ollama
+LLM
+Ollama (Qwen 2.5)
+Generate answers — local/offline option
+DeepSeek
+Generate answers — low-cost API option, strong reasoning
+OpenAI / Gemini
+Generate answers — cloud API option
+Database
+PostgreSQL
+Store users, cases, logs
+sqlalchemy
+Database ORM
+psycopg2-binary
+Connect Python with PostgreSQL
+alembic
+Database migrations
+PDF Processing
+PyMuPDF (pymupdf)
+Extract text from judgment PDFs
+OCR
+Tesseract (pytesseract)
+Read scanned judgments
+Utilities
+numpy
+Numerical operations
+pandas
+Data processing
+loguru
+Logging
+tqdm
+Progress bars
+Containerization
+Docker
+Run components in isolated containers
+Docker Compose
+Manage multiple containers
+Version Control
+Git & GitHub
+Source code management
+Legal Data Sources
+Indian Supreme Court Judgments (AWS Open Data)
+~35,000 SC judgments, 1950–2025, CC-BY-4.0
+Indian High Court Judgments (AWS Open Data)
+Judgments from 25 Indian High Courts, CC-BY-4.0
+India Code
+Central, State, and UT legislation
+eCourts Judgments Portal
+Keyword/Act-based judgment search
+Software Requirements
+Python 3.11+
+Runtime environment
+Node.js 20+, npm
+Frontend build environment
+Docker Desktop
+Containerized deployment
+Ollama
+Local LLM runtime
+10. Roles and Responsibilities
+Team Member
+Role
+Responsibilities
+Tanavi Pandao
+Retrieval & Search Developer
+Build BM25 and semantic search, embeddings, hybrid search, and reranking
+Supriya Mulik
+RAG & Verification Developer
+Build the Legal RAG pipeline and the claim/citation verification module
+Prithviraj Patil
+Backend & Data Developer
+Ingest and index legal datasets, build FastAPI services, manage databases
+Ganesh Kumbhar
+Frontend & Evaluation Developer
+Build the React dashboard, case-workflow features, and run benchmarking experiments

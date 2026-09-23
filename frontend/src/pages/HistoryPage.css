@@ -1,0 +1,438 @@
+/* src/pages/HistoryPage.css
+   ──────────────────────────
+   Research History & Analytics Styling for HALO.
+   Uses approved tokens from index.css.
+*/
+
+.hp-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+
+.hp-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 24px;
+}
+
+.hp-title {
+  font-family: var(--halo-font-ui);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--halo-ink-primary);
+  letter-spacing: -0.02em;
+  margin: 0 0 0.35rem 0;
+}
+
+.hp-subtitle {
+  font-family: var(--halo-font-ui);
+  font-size: 0.9375rem;
+  color: var(--halo-ink-muted);
+  line-height: 1.45;
+  margin: 0;
+  max-width: 720px;
+}
+
+.hp-new-query-btn {
+  padding: 0.55rem 1.15rem;
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+/* ── Metrics Row (Stat-Chip Style like Summary Strip) ────────────────────── */
+
+.hp-analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 24px;
+}
+
+.hp-metric-card {
+  background: var(--halo-surface);
+  border: 1px solid var(--halo-border);
+  border-radius: var(--halo-radius-card);
+  padding: 1.15rem 1.25rem;
+  box-shadow: var(--halo-shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.hp-metric-card:hover {
+  border-color: var(--halo-accent);
+  transform: translateY(-1px);
+}
+
+.hp-metric-label {
+  font-family: var(--halo-font-ui);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--halo-ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.hp-metric-value {
+  font-family: var(--halo-font-display);
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--halo-ink-primary);
+  line-height: 1.1;
+}
+
+.hp-text-success {
+  color: var(--halo-verified-text);
+}
+
+.hp-text-warning {
+  color: var(--halo-warning-text);
+}
+
+/* ── Toolbar: Search, Filters, Sort ──────────────────────────────────────── */
+
+.hp-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 24px;
+  background-color: var(--halo-surface);
+  border: 1px solid var(--halo-border);
+  border-radius: var(--halo-radius-card);
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--halo-shadow-card);
+}
+
+.hp-search-box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid var(--halo-border);
+  border-radius: var(--halo-radius-control);
+  background-color: var(--halo-surface);
+  padding: 0.5rem 0.85rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.hp-search-box:focus-within {
+  border-color: var(--halo-accent);
+  box-shadow: 0 0 0 1px var(--halo-accent);
+}
+
+.hp-search-input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: var(--halo-font-ui);
+  font-size: 0.875rem;
+  color: var(--halo-ink-primary);
+  width: 100%;
+}
+
+.hp-search-input::placeholder {
+  color: var(--halo-ink-muted);
+}
+
+.hp-search-clear {
+  background: none;
+  border: none;
+  color: var(--halo-ink-muted);
+  cursor: pointer;
+  padding: 0;
+}
+
+.hp-filter-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.hp-chips {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.hp-chip {
+  background-color: var(--halo-surface-subtle);
+  border: 1px solid var(--halo-border);
+  border-radius: var(--halo-radius-pill);
+  padding: 0.35rem 0.75rem;
+  font-family: var(--halo-font-ui);
+  font-size: 0.775rem;
+  font-weight: 500;
+  color: var(--halo-ink-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.hp-chip:hover {
+  background-color: var(--halo-accent-subtle);
+  color: var(--halo-accent);
+  border-color: var(--halo-accent);
+}
+
+.hp-chip.active {
+  background-color: var(--halo-accent);
+  color: #FFFFFF;
+  border-color: var(--halo-accent);
+  font-weight: 600;
+}
+
+.hp-sort-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--halo-font-ui);
+  font-size: 0.8125rem;
+}
+
+.hp-sort-label {
+  color: var(--halo-ink-muted);
+  font-weight: 500;
+}
+
+.hp-sort-select {
+  font-family: var(--halo-font-ui);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--halo-ink-primary);
+  background: var(--halo-surface);
+  border: 1px solid var(--halo-border);
+  border-radius: var(--halo-radius-control);
+  padding: 0.35rem 0.65rem;
+  outline: none;
+}
+
+/* ── Audit Table / History Cards ─────────────────────────────────────────── */
+
+.hp-list {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--halo-border);
+  border-radius: var(--halo-radius-card);
+  overflow: hidden;
+  box-shadow: var(--halo-shadow-card);
+  background: var(--halo-surface);
+}
+
+.hp-card {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--halo-border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  transition: background-color 0.15s ease;
+}
+
+.hp-card:last-child {
+  border-bottom: none;
+}
+
+.hp-card:hover {
+  background-color: var(--halo-surface-subtle);
+}
+
+.hp-card-main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.hp-card-top {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.hp-query-id {
+  font-family: var(--halo-font-mono);
+  font-size: 0.725rem;
+  font-weight: 600;
+  color: var(--halo-ink-muted);
+  background-color: var(--halo-surface-subtle);
+  border: 1px solid var(--halo-border);
+  padding: 1px 6px;
+  border-radius: var(--halo-radius-pill);
+}
+
+.hp-query-date {
+  font-family: var(--halo-font-mono);
+  font-size: 0.725rem;
+  color: var(--halo-ink-muted);
+}
+
+.hp-conflict-badge {
+  font-family: var(--halo-font-ui);
+  font-size: 0.725rem;
+  font-weight: 600;
+  background-color: var(--halo-conflict-bg);
+  color: var(--halo-conflict-text);
+  border: 1px solid var(--halo-conflict-border);
+  padding: 2px 7px;
+  border-radius: var(--halo-radius-pill);
+}
+
+.hp-card-title {
+  font-family: var(--halo-font-ui);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--halo-ink-primary);
+  line-height: 1.4;
+  margin: 0;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.hp-card-title:hover {
+  color: var(--halo-accent);
+}
+
+.hp-card-summary {
+  display: flex;
+  align-items: center;
+  font-family: var(--halo-font-ui);
+  font-size: 0.8125rem;
+  color: var(--halo-ink-muted);
+}
+
+/* Side Column: Confidence Bar & Actions */
+.hp-card-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.75rem;
+  flex-shrink: 0;
+  min-width: 180px;
+}
+
+.hp-score-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 0.25rem;
+}
+
+.hp-score-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.hp-score-label {
+  font-family: var(--halo-font-ui);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--halo-ink-muted);
+  text-transform: uppercase;
+}
+
+.hp-score-chip {
+  font-family: var(--halo-font-ui);
+  font-size: 0.725rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: var(--halo-radius-pill);
+}
+
+.hp-score-high {
+  background-color: var(--halo-verified-bg);
+  color: var(--halo-verified-text);
+  border: 1px solid var(--halo-verified-border);
+}
+
+.hp-score-mid {
+  background-color: var(--halo-warning-bg);
+  color: var(--halo-warning-text);
+  border: 1px solid var(--halo-warning-border);
+}
+
+.hp-score-low {
+  background-color: var(--halo-failed-bg);
+  color: var(--halo-failed-text);
+  border: 1px solid var(--halo-failed-border);
+}
+
+.hp-score-bar-bg {
+  width: 100%;
+  height: 4px;
+  background-color: var(--halo-border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.hp-score-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+}
+
+.hp-score-bar-fill.hp-score-high {
+  background-color: var(--halo-verified-text);
+}
+
+.hp-score-bar-fill.hp-score-mid {
+  background-color: var(--halo-warning-text);
+}
+
+.hp-score-bar-fill.hp-score-low {
+  background-color: var(--halo-failed-text);
+}
+
+.hp-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.hp-action-btn {
+  padding: 0.35rem 0.65rem;
+  font-size: 0.775rem;
+}
+
+/* ── Responsive Viewport Breakpoints ─────────────────────────────────────── */
+
+@media (max-width: 992px) {
+  .hp-analytics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .hp-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .hp-card-side {
+    align-items: flex-start;
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .hp-analytics-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hp-toolbar,
+  .hp-filter-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hp-chips {
+    flex-wrap: wrap;
+  }
+}

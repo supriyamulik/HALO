@@ -1,177 +1,381 @@
 /* src/pages/LoginPage.css
-   ─────────────────────────
-   Scoped styles for the login / register page.
-   Global resets and variables are in src/index.css
+   ────────────────────────
+   Authoritative split-panel authentication styling for HALO.
+   Uses only approved tokens from index.css.
 */
 
-/* ── Full-screen centred layout ──────────────────────────────────────────── */
-
-.auth-page {
+.login-layout {
+  display: flex;
   min-height: 100vh;
+  width: 100%;
+  background: var(--halo-bg);
+}
+
+/* ── Left Editorial Panel (~55% width) ───────────────────────────────────── */
+
+.login-editorial-panel {
+  flex: 1.2;
+  background-color: var(--halo-accent);
+  color: #F8F9FA;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-bg);
-  padding: 1.5rem;
+  padding: 4rem 5rem;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  position: relative;
 }
 
-/* ── Card ────────────────────────────────────────────────────────────────── */
-
-.auth-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 12px;
+.editorial-inner {
+  max-width: 520px;
   width: 100%;
-  max-width: 440px;
-  padding: 2.5rem 2rem;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 2.75rem;
 }
 
-/* ── Brand header ────────────────────────────────────────────────────────── */
-
-.auth-brand {
-  text-align: center;
-  margin-bottom: 2rem;
+/* Restrained Brand Mark */
+.editorial-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-family: var(--halo-font-ui);
+  font-size: 0.875rem;
+  letter-spacing: 0.06em;
+  color: rgba(248, 249, 250, 0.9);
 }
 
-.brand-title {
-  font-size: 1.75rem;
+.editorial-emblem {
+  font-size: 1.15rem;
+  line-height: 1;
+  color: #E2E8F0;
+}
+
+.editorial-wordmark {
   font-weight: 700;
-  color: var(--color-text-primary);
-  letter-spacing: -0.02em;
-  margin: 0 0 0.35rem;
+  letter-spacing: 0.12em;
+  color: #FFFFFF;
 }
 
-.brand-tagline {
-  font-size: 0.85rem;
-  color: var(--color-text-muted);
-  line-height: 1.4;
+.editorial-divider {
+  opacity: 0.35;
+  font-weight: 300;
+}
+
+.editorial-subname {
+  font-weight: 400;
+  color: #CBD5E1;
+}
+
+/* Main Editorial Headline */
+.editorial-statement {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.editorial-headline {
+  font-family: var(--halo-font-display);
+  font-size: 2.35rem;
+  font-weight: 500;
+  line-height: 1.22;
+  color: #FFFFFF;
+  letter-spacing: -0.015em;
   margin: 0;
 }
 
-/* ── Tab bar ─────────────────────────────────────────────────────────────── */
+.editorial-subtext {
+  font-family: var(--halo-font-ui);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: #94A3B8;
+  margin: 0;
+}
 
-.tab-bar {
+/* 3 System Pillars — Clean stacked lines with a thin left accent */
+.editorial-pillars {
   display: flex;
-  border-bottom: 2px solid var(--color-border);
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.pillar-item {
+  border-left: 2px solid rgba(255, 255, 255, 0.22);
+  padding-left: 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  transition: border-color 0.2s ease;
+}
+
+.pillar-item:hover {
+  border-left-color: rgba(255, 255, 255, 0.6);
+}
+
+.pillar-title {
+  font-family: var(--halo-font-ui);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #F1F5F9;
+  letter-spacing: 0.01em;
+}
+
+.pillar-desc {
+  font-family: var(--halo-font-ui);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: #94A3B8;
+  margin: 0;
+}
+
+.editorial-footer {
+  font-family: var(--halo-font-ui);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: rgba(148, 163, 184, 0.75);
+  letter-spacing: 0.04em;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ── Right Form Panel ────────────────────────────────────────────────────── */
+
+.login-form-panel {
+  flex: 1;
+  background: var(--halo-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3.5rem 3rem;
+}
+
+.form-container {
+  width: 100%;
+  max-width: 390px;
+}
+
+.form-header {
   margin-bottom: 1.75rem;
 }
 
-.tab-btn {
-  flex: 1;
+.form-title {
+  font-family: var(--halo-font-ui);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--halo-ink-primary);
+  letter-spacing: -0.02em;
+  margin: 0 0 0.35rem 0;
+}
+
+.form-subtitle {
+  font-family: var(--halo-font-ui);
+  font-size: 0.875rem;
+  color: var(--halo-ink-muted);
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* Underline-style Tab Toggle */
+.tab-nav {
+  display: flex;
+  gap: 1.75rem;
+  border-bottom: 1px solid var(--halo-border);
+  margin-bottom: 1.75rem;
+}
+
+.tab-link {
   background: none;
   border: none;
-  cursor: pointer;
-  padding: 0.65rem 0;
+  padding: 0.625rem 0;
+  font-family: var(--halo-font-ui);
   font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--halo-ink-muted);
+  cursor: pointer;
+  position: relative;
+  transition: color 0.15s ease;
+}
+
+.tab-link:hover {
+  color: var(--halo-ink-primary);
+}
+
+.tab-link.active {
+  color: var(--halo-ink-primary);
   font-weight: 600;
-  color: var(--color-text-muted);
-  border-bottom: 2px solid transparent;
-  margin-bottom: -2px;
-  transition: color 0.15s, border-color 0.15s;
 }
 
-.tab-btn.active {
-  color: var(--color-accent);
-  border-bottom-color: var(--color-accent);
+.tab-link.active::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: var(--halo-accent);
+  border-radius: 1px;
 }
 
-.tab-btn:hover:not(.active) {
-  color: var(--color-text-primary);
-}
-
-/* ── Form ────────────────────────────────────────────────────────────────── */
+/* ── Form Fields & Controls ──────────────────────────────────────────────── */
 
 .auth-form {
   display: flex;
   flex-direction: column;
-  gap: 1.1rem;
+  gap: 1.25rem;
 }
 
-.field-group {
+.auth-field {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.375rem;
 }
 
-.field-group label {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--color-text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+.auth-field label {
+  font-family: var(--halo-font-ui);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--halo-ink-secondary);
 }
 
-.field-group input,
-.field-group select {
-  padding: 0.65rem 0.85rem;
-  border: 1px solid var(--color-border);
-  border-radius: 7px;
-  font-size: 0.95rem;
-  background: var(--color-input-bg);
-  color: var(--color-text-primary);
-  transition: border-color 0.15s, box-shadow 0.15s;
-  outline: none;
-}
-
-.field-group input:focus,
-.field-group select:focus {
-  border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px var(--color-accent-soft);
-}
-
-/* ── Login extras (remember me + forgot password) ─────────────────────────  */
-
-.login-extras {
+.auth-field-header {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: center;
-  margin-top: -0.25rem;
 }
 
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-  font-size: 0.875rem;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-}
-
-.checkbox-label input[type="checkbox"] {
-  accent-color: var(--color-accent);
-  width: 15px;
-  height: 15px;
-  cursor: pointer;
-}
-
-.link-muted {
-  font-size: 0.875rem;
-  color: var(--color-accent);
+.auth-link-forgot {
+  font-family: var(--halo-font-ui);
+  font-size: 0.75rem;
+  color: var(--halo-ink-muted);
   text-decoration: none;
+  transition: color 0.15s ease;
 }
 
-.link-muted:hover {
+.auth-link-forgot:hover {
+  color: var(--halo-accent);
   text-decoration: underline;
 }
 
-/* ── Alerts ──────────────────────────────────────────────────────────────── */
-
-.alert {
-  padding: 0.7rem 1rem;
-  border-radius: 7px;
+.auth-field input,
+.auth-field select {
+  font-family: var(--halo-font-ui);
   font-size: 0.875rem;
+  color: var(--halo-ink-primary);
+  background: var(--halo-surface);
+  border: 1px solid var(--halo-border);
+  border-radius: var(--halo-radius-control);
+  padding: 0.625rem 0.75rem;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.auth-field input::placeholder {
+  color: #94A3B8;
+}
+
+.auth-field input:focus,
+.auth-field select:focus {
+  border-color: var(--halo-accent);
+  box-shadow: 0 0 0 1px var(--halo-accent);
+}
+
+/* Checkbox & Options */
+.auth-options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: -0.25rem;
+}
+
+.auth-checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--halo-font-ui);
+  font-size: 0.8125rem;
+  color: var(--halo-ink-muted);
+  cursor: pointer;
+  user-select: none;
+}
+
+.auth-checkbox-label input[type="checkbox"] {
+  accent-color: var(--halo-accent);
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+}
+
+/* Primary Button */
+.auth-btn-submit {
+  width: 100%;
+  height: 40px;
+  background: var(--halo-accent);
+  color: #FFFFFF;
+  border: 1px solid var(--halo-accent);
+  border-radius: var(--halo-radius-control);
+  font-family: var(--halo-font-ui);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: background 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-btn-submit:hover:not(:disabled) {
+  background: var(--halo-accent-hover);
+  border-color: var(--halo-accent-hover);
+}
+
+.auth-btn-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Alerts */
+.auth-alert {
+  padding: 0.625rem 0.8125rem;
+  border-radius: var(--halo-radius-control);
+  font-family: var(--halo-font-ui);
+  font-size: 0.8125rem;
   line-height: 1.4;
 }
 
-.alert-error {
-  background: #fef2f2;
-  color: #b91c1c;
-  border: 1px solid #fecaca;
+.auth-alert-error {
+  background: var(--halo-failed-bg);
+  color: var(--halo-failed-text);
+  border: 1px solid var(--halo-failed-border);
 }
 
-.alert-success {
-  background: #f0fdf4;
-  color: #166534;
-  border: 1px solid #bbf7d0;
+.auth-alert-success {
+  background: var(--halo-verified-bg);
+  color: var(--halo-verified-text);
+  border: 1px solid var(--halo-verified-border);
+}
+
+/* ── Responsive Viewport Adjustments ─────────────────────────────────────── */
+
+@media (max-width: 900px) {
+  .login-layout {
+    flex-direction: column;
+  }
+
+  .login-editorial-panel {
+    flex: none;
+    padding: 3rem 2rem;
+  }
+
+  .editorial-inner {
+    gap: 1.75rem;
+  }
+
+  .editorial-headline {
+    font-size: 1.75rem;
+  }
+
+  .login-form-panel {
+    padding: 2.5rem 1.5rem;
+  }
 }

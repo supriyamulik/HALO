@@ -3,19 +3,31 @@
  * ─────────────────────────────────────
  * Deep-dive verification view for /research/:queryId/verify.
  *
- * Uses the same getResearchResult() call as ResearchResultPage — no new
- * API contract. Each claim is expanded into a numbered card with three
- * explicit sub-checks (Source Exists, Citation Accurate, Passage Supports)
- * derived from the citation and evidence_state fields in the fixture.
- *
- * API swap: change researchApi.js only. Never edit this file to change
- * data source.
+ * Implements:
+ *   - Technical inspection top bar with ghost back button and monospace query badge.
+ *   - 4 compact status stat chips (Total / Verified / Warnings / Failed).
+ *   - Claim cards with 3px status left border and 24px monospace number circle.
+ *   - Clean unboxed sub-check rows with hairlines.
+ *   - Cited Case Source footer with scale glyph and monospace citation.
+ *   - Right-aligned bottom action bar using consistent buttons.
  */
 
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import {
+  ArrowLeft,
+  CheckCircle2,
+  AlertTriangle,
+  XCircle,
+  Scale,
+  Layers,
+  ChevronRight,
+  ExternalLink,
+} from "lucide-react";
 import { getResearchResult } from "../api/researchApi";
 import AppShell from "../components/AppShell";
+import PageHeader from "../components/PageHeader";
+import StatusBadge from "../components/StatusBadge";
 import "./ClaimVerificationPage.css";
 
 // ─── Evidence-state → human-readable passage description ─────────────────────
@@ -44,48 +56,40 @@ function evidencePassageLabel(evidenceState) {
 
 // ─── Sub-check state derivation ───────────────────────────────────────────────
 
-/**
- * Returns sub-check statuses for the three checks based on claim status.
- *   "pass"    → green tick
- *   "fail"    → red cross
- *   "caution" → amber caution
- */
 function deriveSubChecks(verificationStatus, evidenceState) {
   if (verificationStatus === "supported") {
     return { sourceExists: "pass", citationAccurate: "pass", passageSupports: "pass" };
   }
 
   if (verificationStatus === "warning") {
-    // Source and citation were found; the passage support is disputed
     return { sourceExists: "pass", citationAccurate: "caution", passageSupports: "caution" };
   }
 
-  // "failed" — we differentiate slightly on evidence_state
   if (evidenceState === "CONTRADICTED") {
-    // Source exists in corpus but actively contradicts the claim
     return { sourceExists: "pass", citationAccurate: "fail", passageSupports: "fail" };
   }
 
-  // Generic failed — source or citation not found at all
   return { sourceExists: "fail", citationAccurate: "fail", passageSupports: "fail" };
-}
-
-// ─── Sub-check icon ───────────────────────────────────────────────────────────
-
-function SubCheckIcon({ state }) {
-  if (state === "pass")
-    return <span className="cvp-subcheck-icon cvp-subcheck-pass" aria-label="Pass">✓</span>;
-  if (state === "caution")
-    return <span className="cvp-subcheck-icon cvp-subcheck-caution" aria-label="Caution">⚠</span>;
-  return <span className="cvp-subcheck-icon cvp-subcheck-fail" aria-label="Fail">✗</span>;
 }
 
 // ─── Sub-check row ────────────────────────────────────────────────────────────
 
 function SubCheckRow({ state, label, detail }) {
+  let Icon = CheckCircle2;
+  let iconCls = "subcheck-icon-pass";
+  if (state === "caution") {
+    Icon = AlertTriangle;
+    iconCls = "subcheck-icon-caution";
+  } else if (state === "fail") {
+    Icon = XCircle;
+    iconCls = "subcheck-icon-fail";
+  }
+
   return (
-    <div className={`cvp-subcheck-row cvp-subcheck-row--${state}`}>
-      <SubCheckIcon state={state} />
+    <div className={`cvp-subcheck-row cvp-subcheck-${state}`}>
+      <span className={`cvp-subcheck-icon ${iconCls}`}>
+        <Icon size={16} />
+      </span>
       <div className="cvp-subcheck-content">
         <span className="cvp-subcheck-label">{label}</span>
         <span className="cvp-subcheck-detail">{detail}</span>
@@ -96,20 +100,32 @@ function SubCheckRow({ state, label, detail }) {
 
 // ─── Claim card ───────────────────────────────────────────────────────────────
 
-function ClaimCard({ claim, index }) {
-  const { claim_text, verification_status, citation, evidence_state } = claim;
+function ClaimCard({ claim, index, queryId }) {
+  const { claim_text, verification_status, citation, evidence_state, claim_id } = claim;
 
-  const STATUS_MAP = {
-    supported: { label: "VERIFIED", cls: "cvp-badge--verified" },
-    warning:   { label: "WARNING",  cls: "cvp-badge--warning"  },
-    failed:    { label: "FAILED",   cls: "cvp-badge--failed"   },
+  const STATUS_CONFIG = {
+    supported: {
+      label: "VERIFIED",
+      pillClass: "status-pill-verified",
+      cardClass: "claim-verified",
+    },
+    warning: {
+      label: "WARNING",
+      pillClass: "status-pill-warning",
+      cardClass: "claim-warning",
+    },
+    failed: {
+      label: "FAILED",
+      pillClass: "status-pill-failed",
+      cardClass: "claim-failed",
+    },
   };
 
-  const { label: badgeLabel, cls: badgeCls } =
-    STATUS_MAP[verification_status] ?? {
-      label: verification_status.toUpperCase(),
-      cls: "",
-    };
+  const config = STATUS_CONFIG[verification_status] ?? {
+    label: verification_status?.toUpperCase() ?? "UNKNOWN",
+    pillClass: "status-pill-warning",
+    cardClass: "claim-warning",
+  };
 
   const checks = deriveSubChecks(verification_status, evidence_state);
 
@@ -122,16 +138,20 @@ function ClaimCard({ claim, index }) {
     : null;
 
   return (
-    <div className={`cvp-claim-card cvp-claim-card--${verification_status}`}>
-      {/* Card header */}
+    <article className={`cvp-claim-card ${config.cardClass}`}>
+      {/* Card Header: 24px Number Circle + Claim Text + Status Pill */}
       <div className="cvp-card-header">
-        <div className="cvp-card-number">{String(index + 1).padStart(2, "0")}</div>
-        <h3 className="cvp-card-claim-text">{claim_text}</h3>
-        <span className={`cvp-status-badge ${badgeCls}`}>{badgeLabel}</span>
+        <div className="cvp-header-left">
+          <div className="cvp-claim-num-circle">
+            {String(index + 1).padStart(2, "0")}
+          </div>
+          <h3 className="cvp-card-claim-text">{claim_text}</h3>
+        </div>
+        <StatusBadge status={verification_status} label={config.label} />
       </div>
 
-      {/* Three sub-checks */}
-      <div className="cvp-subchecks">
+      {/* Sub-checks: Clean List Rows with Hairlines (No box-in-box) */}
+      <div className="cvp-subchecks-list">
         <SubCheckRow
           state={checks.sourceExists}
           label="Source Exists"
@@ -163,81 +183,123 @@ function ClaimCard({ claim, index }) {
         />
       </div>
 
-      {/* Cited case source footer */}
+      {/* Cited Case Source Footer Line with Scale Glyph */}
       {citation && (
-        <div className="cvp-case-source">
-          <span className="cvp-case-source-icon">📎</span>
-          <span className="cvp-case-source-text">
-            <strong>{citation.case_name}</strong>
-            {" · "}
-            {citation.court}
-            {formattedDate && ` · ${formattedDate}`}
-            {citation.paragraph && (
-              <span className="cvp-case-paragraph"> — {citation.paragraph}</span>
+        <div className="cvp-case-source-footer">
+          <div className="source-info-group">
+            <Scale size={15} className="source-scale-icon" />
+            <span className="source-case-name">{citation.case_name}</span>
+            <span className="source-sep">·</span>
+            <code className="source-citation-no">{citation.citation_no}</code>
+            <span className="source-sep">·</span>
+            <span className="source-court-name">{citation.court}</span>
+            {formattedDate && (
+              <>
+                <span className="source-sep">·</span>
+                <span className="source-date">{formattedDate}</span>
+              </>
             )}
-          </span>
+            {citation.paragraph && (
+              <span className="source-paragraph"> — {citation.paragraph}</span>
+            )}
+          </div>
+
+          {queryId && (
+            <Link
+              to={`/research/${queryId}/evidence?claimId=${claim_id}`}
+              className="source-evidence-link"
+              title="Inspect provenance in dual-pane passage viewer"
+            >
+              <span>Inspect Passage</span>
+              <ChevronRight size={13} />
+            </Link>
+          )}
         </div>
       )}
-    </div>
+    </article>
   );
 }
 
-// ─── Summary strip ────────────────────────────────────────────────────────────
+// ─── Summary Strip (4 Compact Stat Chips) ─────────────────────────────────────
 
 function SummaryStrip({ claims }) {
-  const total    = claims.length;
+  const total = claims.length;
   const verified = claims.filter((c) => c.verification_status === "supported").length;
   const warnings = claims.filter((c) => c.verification_status === "warning").length;
-  const failed   = claims.filter((c) => c.verification_status === "failed").length;
+  const failed = claims.filter((c) => c.verification_status === "failed").length;
 
   return (
     <div
-      className="cvp-summary-strip"
+      className="cvp-summary-chips-grid"
       role="status"
-      aria-label="Claim verification summary"
+      aria-label="Claim verification summary metrics"
     >
-      <div className="cvp-summary-item cvp-summary-total">
-        <span className="cvp-summary-num">{total}</span>
-        <span className="cvp-summary-lbl">Total Claims Analyzed</span>
+      {/* Chip 1: Total */}
+      <div className="stat-chip chip-total">
+        <div className="chip-icon-circle">
+          <Layers size={16} />
+        </div>
+        <div className="chip-meta">
+          <span className="chip-number">{total}</span>
+          <span className="chip-label">Analyzed Claims</span>
+        </div>
       </div>
-      <div className="cvp-summary-divider" />
-      <div className="cvp-summary-item cvp-summary-verified">
-        <span className="cvp-summary-num">{verified}</span>
-        <span className="cvp-summary-lbl">Verified</span>
+
+      {/* Chip 2: Verified */}
+      <div className="stat-chip chip-verified">
+        <div className="chip-icon-circle">
+          <CheckCircle2 size={16} />
+        </div>
+        <div className="chip-meta">
+          <span className="chip-number">{verified}</span>
+          <span className="chip-label">Strictly Verified</span>
+        </div>
       </div>
-      <div className="cvp-summary-divider" />
-      <div className="cvp-summary-item cvp-summary-warnings">
-        <span className="cvp-summary-num">{warnings}</span>
-        <span className="cvp-summary-lbl">Warnings</span>
+
+      {/* Chip 3: Warnings */}
+      <div className="stat-chip chip-warning">
+        <div className="chip-icon-circle">
+          <AlertTriangle size={16} />
+        </div>
+        <div className="chip-meta">
+          <span className="chip-number">{warnings}</span>
+          <span className="chip-label">Warnings</span>
+        </div>
       </div>
-      <div className="cvp-summary-divider" />
-      <div className="cvp-summary-item cvp-summary-failed">
-        <span className="cvp-summary-num">{failed}</span>
-        <span className="cvp-summary-lbl">Failed</span>
+
+      {/* Chip 4: Failed */}
+      <div className="stat-chip chip-failed">
+        <div className="chip-icon-circle">
+          <XCircle size={16} />
+        </div>
+        <div className="chip-meta">
+          <span className="chip-number">{failed}</span>
+          <span className="chip-label">Unverified / Failed</span>
+        </div>
       </div>
     </div>
   );
 }
 
-// ─── Skeleton ─────────────────────────────────────────────────────────────────
+// ─── Skeleton Loading ─────────────────────────────────────────────────────────
 
 function Skeleton() {
   return (
     <AppShell user={null}>
       <div className="cvp-page">
         <div className="cvp-topbar">
-          <div className="sk-line sk-back" aria-hidden="true" />
-          <div className="sk-line cvp-sk-title" aria-hidden="true" />
-          <div style={{ width: 120 }} />
+          <div className="sk-line sk-btn" style={{ width: 140 }} />
+          <div className="sk-line" style={{ width: 220, height: 24 }} />
+          <div className="sk-line sk-btn" style={{ width: 160 }} />
         </div>
-        <div className="cvp-sk-strip" aria-hidden="true" />
+        <div className="cvp-summary-chips-grid">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="stat-chip" style={{ height: 60 }} />
+          ))}
+        </div>
         <div className="cvp-cards-list">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="cvp-sk-card" aria-hidden="true">
-              <div className="sk-line sk-heading" />
-              <div className="sk-line sk-para" />
-              <div className="sk-line sk-para sk-para-short" />
-            </div>
+            <div key={i} className="cvp-claim-card" style={{ height: 160 }} />
           ))}
         </div>
       </div>
@@ -245,22 +307,20 @@ function Skeleton() {
   );
 }
 
-// ─── Error state ──────────────────────────────────────────────────────────────
+// ─── Error State ──────────────────────────────────────────────────────────────
 
 function ErrorState({ queryId }) {
   return (
     <AppShell user={null}>
       <div className="cvp-page">
-        <div className="rrp-error-box">
-          <div className="rrp-error-icon">⚠</div>
-          <h2>Result not found</h2>
-          <p>
-            No research result exists for query ID{" "}
-            <code>{queryId}</code>. It may have expired or been entered
-            incorrectly.
-          </p>
-          <Link to="/research" className="btn rrp-back-btn">
-            ← Back to Research
+        <div className="error-banner" role="alert">
+          <AlertTriangle size={18} />
+          <div>
+            <strong>Result not found: </strong>
+            No research result exists for query ID <code>{queryId}</code>.
+          </div>
+          <Link to="/research" className="btn btn-secondary" style={{ marginLeft: "auto" }}>
+            Back to Research
           </Link>
         </div>
       </div>
@@ -268,15 +328,15 @@ function ErrorState({ queryId }) {
   );
 }
 
-// ─── Main page ────────────────────────────────────────────────────────────────
+// ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function ClaimVerificationPage() {
   const { queryId } = useParams();
-  const navigate    = useNavigate();
+  const navigate = useNavigate();
 
-  const [result,  setResult]  = useState(null);
+  const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error,   setError]   = useState(false);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -285,11 +345,19 @@ export default function ClaimVerificationPage() {
     setResult(null);
 
     getResearchResult(queryId)
-      .then((data) => { if (!cancelled) setResult(data); })
-      .catch(()    => { if (!cancelled) setError(true);  })
-      .finally(()  => { if (!cancelled) setLoading(false); });
+      .then((data) => {
+        if (!cancelled) setResult(data);
+      })
+      .catch(() => {
+        if (!cancelled) setError(true);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
 
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [queryId]);
 
   if (loading) return <Skeleton />;
@@ -306,67 +374,83 @@ export default function ClaimVerificationPage() {
   return (
     <AppShell user={null}>
       <div className="cvp-page">
+        {/* ── Page Header ── */}
+        <PageHeader
+          title="Claim & Citation Verification"
+          action={
+            <>
+              <button
+                type="button"
+                className="btn btn-ghost cvp-back-btn"
+                onClick={() => navigate(`/research/${queryId}`)}
+                id="cvp-back-to-answer-btn"
+              >
+                <ArrowLeft size={15} style={{ marginRight: 6 }} />
+                <span>Back to Answer</span>
+              </button>
+              <Link
+                to={`/research/${queryId}/evidence`}
+                className="btn btn-secondary cvp-inspect-btn"
+                id="cvp-evidence-view-btn"
+              >
+                <span>Inspect Evidence</span>
+                <ChevronRight size={14} style={{ marginLeft: 4 }} />
+              </Link>
+            </>
+          }
+        />
 
-        {/* ── Top bar ─────────────────────────────────────────────────── */}
-        <div className="cvp-topbar">
-          <button
-            className="btn btn-ghost cvp-back-link"
-            onClick={() => navigate(`/research/${queryId}`)}
-            id="cvp-back-to-answer-btn"
-          >
-            ← Back to Answer
-          </button>
-
-          <div className="cvp-topbar-center">
-            <h1 className="cvp-page-title">Claim &amp; Citation Verification</h1>
-            <span className="cvp-query-id-label">Query: {queryId}</span>
-          </div>
-
-          {/* Spacer to balance the back button */}
-          <div style={{ minWidth: 140 }} aria-hidden="true" />
-        </div>
-
-        {/* ── Summary strip ────────────────────────────────────────────── */}
+        {/* ── Summary Strip (4 Compact Stat Chips) ── */}
         <SummaryStrip claims={claims} />
 
-        {/* ── Claim cards ──────────────────────────────────────────────── */}
-        <div className="cvp-cards-list">
+        {/* ── Claim Cards ── */}
+        <section className="cvp-cards-list" aria-label="Verified Claims List">
           {claims.map((claim, index) => (
-            <ClaimCard key={claim.claim_id} claim={claim} index={index} />
+            <ClaimCard
+              key={claim.claim_id}
+              claim={claim}
+              index={index}
+              queryId={queryId}
+            />
           ))}
-        </div>
+        </section>
 
-        {/* ── Bottom action bar ────────────────────────────────────────── */}
-        <div className="cvp-action-bar">
+        {/* ── Bottom Action Bar (Right-Aligned) ── */}
+        <footer className="cvp-action-bar">
           <button
-            className="btn btn-secondary cvp-action-btn"
+            type="button"
+            className="btn btn-ghost"
             onClick={() => navigate(`/research/${queryId}`)}
             id="cvp-action-back-btn"
           >
-            Back to Answer
+            <ArrowLeft size={15} style={{ marginRight: 6 }} />
+            <span>Back to Answer</span>
           </button>
 
           <div className="cvp-action-bar-right">
             {hasIssues && (
               <button
-                className="btn cvp-action-btn cvp-review-btn"
+                type="button"
+                className="btn btn-secondary"
                 onClick={() => navigate(`/research/${queryId}?reviewed=true`)}
                 id="cvp-review-warnings-btn"
               >
-                ⚠ Review Warnings
+                <AlertTriangle size={15} style={{ marginRight: 6 }} />
+                <span>Review Warnings</span>
               </button>
             )}
 
             <button
-              className="btn cvp-action-btn cvp-accept-btn"
+              type="button"
+              className="btn btn-primary"
               onClick={() => navigate(`/research/${queryId}?verified=true`)}
               id="cvp-accept-verified-btn"
             >
-              ✓ Accept Verified
+              <CheckCircle2 size={15} style={{ marginRight: 6 }} />
+              <span>Accept Verified</span>
             </button>
           </div>
-        </div>
-
+        </footer>
       </div>
     </AppShell>
   );

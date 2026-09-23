@@ -1,0 +1,71 @@
+/* src/components/PageHeader.css
+   ──────────────────────────────
+   Shared page-level header used across all HALO pages.
+   Mirrors the dashboard-header pattern — title + optional subtitle
+   on the left, action slot on the right.
+*/
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding-bottom: 1.25rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--halo-border);
+  /* Prevent the header row from ever creating horizontal overflow */
+  min-width: 0;
+}
+
+.page-header__titles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  /* Allow the text column to shrink below its natural width */
+  min-width: 0;
+  flex: 1 1 0;
+}
+
+.page-header__title {
+  font-family: var(--halo-font-ui);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--halo-ink-primary);
+  letter-spacing: -0.02em;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.page-header__subtitle {
+  font-family: var(--halo-font-ui);
+  font-size: 0.9375rem;
+  color: var(--halo-ink-muted);
+  line-height: 1.45;
+  margin: 0;
+}
+
+.page-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  /* Never shrink the action buttons; never expand beyond natural width */
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .page-header__actions {
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .page-header__actions>* {
+    max-width: 100%;
+  }
+}

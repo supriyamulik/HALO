@@ -1,0 +1,99 @@
+/* src/components/StatusBadge.css
+   ───────────────────────────────
+   Unified pill/badge component for HALO.
+   Enforces Plus Jakarta Sans, uppercase 11px, 600 weight,
+   var(--halo-radius-pill) [4px], 1px border, and semantic status tokens.
+*/
+
+.halo-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--halo-radius-pill);
+  font-family: var(--halo-font-ui);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1.25;
+  white-space: nowrap;
+  border: 1px solid transparent;
+  box-sizing: border-box;
+}
+
+.halo-status-badge--sm {
+  padding: 0.15rem 0.45rem;
+  font-size: 0.65rem;
+}
+
+.halo-status-badge--md {
+  padding: 0.25rem 0.65rem;
+  font-size: 0.725rem;
+}
+
+/* Verified / Clean / Supported / Approved / High / Active */
+.halo-status-badge--verified {
+  background-color: var(--halo-verified-bg);
+  color: var(--halo-verified-text);
+  border-color: var(--halo-verified-border);
+}
+
+/* Warning / Mixed / Review / Moderate / Qualified / In Hearing / Notary */
+.halo-status-badge--warning {
+  background-color: var(--halo-warning-bg);
+  color: var(--halo-warning-text);
+  border-color: var(--halo-warning-border);
+}
+
+/* Failed / Weak / Danger / Low / Redacted / Fail-Closed */
+.halo-status-badge--failed {
+  background-color: var(--halo-failed-bg);
+  color: var(--halo-failed-text);
+  border-color: var(--halo-failed-border);
+}
+
+/* Conflict Detected */
+.halo-status-badge--conflict {
+  background-color: var(--halo-conflict-bg);
+  color: var(--halo-conflict-text);
+  border-color: var(--halo-conflict-border);
+}
+
+/* Apex Court Tier */
+.halo-status-badge--apex {
+  background-color: var(--halo-accent);
+  color: #FFFFFF;
+  border-color: var(--halo-accent);
+}
+
+/* Subordinate Court Bench */
+.halo-status-badge--subordinate {
+  background-color: var(--halo-surface-subtle);
+  color: var(--halo-ink-secondary);
+  border-color: var(--halo-border);
+}
+
+/* Neutral / Secondary / Draft / Archived / Unknown */
+.halo-status-badge--neutral {
+  background-color: var(--halo-surface-subtle);
+  color: var(--halo-ink-secondary);
+  border-color: var(--halo-border);
+}
+
+/* Accent Subtle / Stage / Active highlight */
+.halo-status-badge--accent {
+  background-color: var(--halo-accent-subtle);
+  color: var(--halo-accent);
+  border-color: rgba(30, 58, 95, 0.18);
+}
+
+/* Optional tiny status dot */
+.halo-status-badge-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: currentColor;
+  display: inline-block;
+  opacity: 0.85;
+}
