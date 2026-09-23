@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.auth.controller import router as auth_router
+from app.research.controller import router as research_router
 from app.auth.repository import init_db
 
 
@@ -29,9 +30,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount auth router under /api/v1 (and alias under root /auth for flexibility)
+# Mount routers under /api/v1 (and aliases)
 app.include_router(auth_router, prefix="/api/v1")
 app.include_router(auth_router)
+app.include_router(research_router, prefix="/api/v1")
+app.include_router(research_router)
 
 
 @app.get("/api/v1/health", tags=["system"])

@@ -55,48 +55,55 @@ Last updated: 2026-09-22
   - Route in Router: [`frontend/src/App.jsx`](file:///d:/HALO/frontend/src/App.jsx#L60-L66)
 - **Verification Status**: Verified with zero build errors (`npm run build`), tested against `q_001`, `q_002` (verifying mixed statuses), and `q_003`.
 
-### 1.7 Mock Data Layer & API Abstraction
-- **What it does**: Centralized frozen JSON contract matching PRD Section 32 exactly. Single point of integration (`researchApi.js`) so swapping to the real pipeline requires updating only one file.
+### 1.7 Live Research API & HaloPipeline Integration
+- **What it does**: Fully integrated real-time legal research verification engine with `HaloPipeline` orchestrating atomic claim extraction, 3-tier citation verification against D1 (Companies Act 2013) & D2 (Supreme Court Judgments) corpora, neural-symbolic evidence verification, temporal currency checks, judicial conflict detection, fail-closed policy enforcement, and cryptographic SHA-256 audit logging.
 - **Implementation Files**:
-  - Contract Data Fixtures: [`frontend/src/api/mockData.js`](file:///d:/HALO/frontend/src/api/mockData.js) (Lines 1–303)
-  - API Service Layer: [`frontend/src/api/researchApi.js`](file:///d:/HALO/frontend/src/api/researchApi.js) (Lines 1–143)
-- **Verification Status**: Audited against PRD Section 32; 22/22 contract fields match exactly.
+  - Research Controller: [`backend/app/research/controller.py`](file:///d:/HALO/backend/app/research/controller.py)
+  - Contract Adapter: [`backend/app/research/adapter.py`](file:///d:/HALO/backend/app/research/adapter.py)
+  - Pydantic Schemas: [`backend/app/research/schema.py`](file:///d:/HALO/backend/app/research/schema.py)
+  - Pipeline Engine: [`backend/halo/pipeline.py`](file:///d:/HALO/backend/halo/pipeline.py)
+  - Verification Subsystems: [`backend/halo/`](file:///d:/HALO/backend/halo/) (`claim_extractor`, `citation_verifier`, `evidence_verifier`, `temporal_verifier`, `conflict_detector`, `confidence`, `governor`, `audit`)
+  - Primary Corpora: [`backend/data/`](file:///d:/HALO/backend/data/) (`dataset_1`, `dataset2`)
+  - Frontend Client Service: [`frontend/src/api/researchApi.js`](file:///d:/HALO/frontend/src/api/researchApi.js)
+- **Verification Status**: 16/16 automated pytest unit & integration tests passing across Auth, RBAC, and Research pipeline. Frontend build verified with 0 errors (`npm run build`).
 
 ---
 
-## 2. What's Stubbed / Not Started Yet
+## 2. What's Stubbed / In Progress
 
-The following routes currently render [`PlaceholderPage.jsx`](file:///d:/HALO/frontend/src/pages/PlaceholderPage.jsx) in [`frontend/src/App.jsx`](file:///d:/HALO/frontend/src/App.jsx#L68-L88):
+The following secondary views currently render [`PlaceholderPage.jsx`](file:///d:/HALO/frontend/src/pages/PlaceholderPage.jsx) in [`frontend/src/App.jsx`](file:///d:/HALO/frontend/src/App.jsx#L68-L88):
 
-| Route in `App.jsx` | Target PRD Screen / Feature | Description of What Needs to be Built |
+| Route in `App.jsx` | Target PRD Screen / Feature | Description |
 | :--- | :--- | :--- |
-| `/cases` | **Cases / Case Workspace** ([`Details.txt: Line 70`](file:///d:/HALO/Details.txt#L70)) | Multi-case workspace for advocates: list of active cases, attached research briefs, document repository, task checklists, and hearing logs. |
-| `/history` | **Research History & Analytics** (PRD Screen 6, [`PRD: Line 1590`](file:///d:/HALO/HALO_Production_Grade_PRD_v2.md#L1590)) | Full history page listing past research queries, confidence metrics, temporal versions, and verification outcomes with date filtering. |
-| `/research/:queryId/evidence` *(route to be added)* | **Evidence / Judgment Viewer** (PRD Screen 3, [`PRD: Line 1546`](file:///d:/HALO/HALO_Production_Grade_PRD_v2.md#L1546)) | Deep-dive viewer tracing: `Claim` &rarr; `Source` &rarr; `Document Version` &rarr; `Exact Passage` with highlighted text spans and paragraph citations. |
-| `/research/:queryId/conflict` *(route to be added)* | **Standalone Conflict View** (PRD Screen 5, [`PRD: Line 1576`](file:///d:/HALO/HALO_Production_Grade_PRD_v2.md#L1576)) | Dual-column judicial conflict inspector displaying Authority A vs Authority B, conflicting paragraphs, court hierarchies, and temporal timelines. |
+| `/cases` | **Cases / Case Workspace** | Multi-case workspace for advocates: list of active cases, attached research briefs, document repository. |
+| `/history` | **Research History & Analytics** (PRD Screen 6) | Dedicated history page listing past research queries, confidence metrics, and verification outcomes (API is live). |
+| `/research/:queryId/evidence` | **Evidence / Judgment Viewer** (PRD Screen 3) | Deep-dive viewer tracing: `Claim` &rarr; `Source` &rarr; `Document Version` &rarr; `Exact Passage` with highlighted text spans. |
+| `/research/:queryId/conflict` | **Standalone Conflict View** (PRD Screen 5) | Dual-column judicial conflict inspector displaying Authority A vs Authority B and conflicting paragraphs. |
 
 ---
 
-## 3. Backend Modules Not Yet Touched
+## 3. Test Coverage Summary
 
-The following 14 module directories in [`backend/app/`](file:///d:/HALO/backend/app) contain only `__init__.py` and `.gitkeep`. They represent the teammate's research/retrieval pipeline. **Confirmed: 0 stray or accidental code files exist in these folders.**
+Running `pytest -v` from [`backend/`](file:///d:/HALO/backend) produces **16 passed tests**:
 
-1. `backend/app/query/` — Query expansion, intent classification, legal entity extraction
-2. `backend/app/retrieval/` — Hybrid BM25 lexical + dense semantic retrieval
-3. `backend/app/reranking/` — Cross-encoder reranker & authority scoring
-4. `backend/app/generation/` — Grounded answer generator
-5. `backend/app/claims/` — Claim extractor (atomic proposition splitter)
-6. `backend/app/verification/` — Evidence Verifier
-7. `backend/app/citations/` — 3-Tier citation verifier
-8. `backend/app/temporal/` — Temporal validity & amendment tracking
-9. `backend/app/authority/` — Court hierarchy & binding precedent weighting
-10. `backend/app/provenance/` — Evidence span & document passage lineage
-11. `backend/app/conflict/` — Conflict detector (inter-court / intra-bench disputes)
-12. `backend/app/ingestion/` — Legal corpus parser & chunker
-13. `backend/app/evaluation/` — Benchmarking & accuracy harness
-14. `backend/app/audit/` — Non-repudiation & security audit logger
-
----
+| Test File | Test Case | Status |
+| :--- | :--- | :--- |
+| `tests/test_auth.py` | `test_register_success` | ✅ PASSED |
+| `tests/test_auth.py` | `test_duplicate_email_409` | ✅ PASSED |
+| `tests/test_auth.py` | `test_short_password_422` | ✅ PASSED |
+| `tests/test_auth.py` | `test_login_success` | ✅ PASSED |
+| `tests/test_auth.py` | `test_wrong_password_401` | ✅ PASSED |
+| `tests/test_auth.py` | `test_unknown_email_401` | ✅ PASSED |
+| `tests/test_auth.py` | `test_me_with_valid_token` | ✅ PASSED |
+| `tests/test_auth.py` | `test_me_without_token_401_or_403` | ✅ PASSED |
+| `tests/test_auth.py` | `test_me_with_invalid_token_401` | ✅ PASSED |
+| `tests/test_rbac.py` | `test_role_lawyer` | ✅ PASSED |
+| `tests/test_rbac.py` | `test_role_researcher` | ✅ PASSED |
+| `tests/test_rbac.py` | `test_role_institution_admin` | ✅ PASSED |
+| `tests/test_rbac.py` | `test_role_admin` | ✅ PASSED |
+| `tests/test_research_api.py` | `test_research_query_submit` | ✅ PASSED |
+| `tests/test_research_api.py` | `test_research_history_get` | ✅ PASSED |
+| `tests/test_research_api.py` | `test_research_result_get` | ✅ PASSED |
 
 ## 4. Known Gaps / Open Issues
 
