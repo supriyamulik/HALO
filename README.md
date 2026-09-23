@@ -141,5 +141,5 @@ npm run dev
 
 ## 👥 Contributors
 
-- **Supriya Mulik**
 - **Prithviraj Patil**
+- **Supriya Mulik**
