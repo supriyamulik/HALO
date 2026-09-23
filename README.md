@@ -136,3 +136,10 @@ npm run dev
 | `/drafts` | Grounded Legal Pleadings, Affidavits & Notice Auto-Drafting Manager |
 | `/history` | Research query search, filtering, and aggregate analytics |
 | `/admin/audit` | Live Cryptographic Audit Trail with real-time SHA-256 validation |
+
+---
+
+## 👥 Contributors
+
+- **Supriya Mulik**
+- **Prithviraj Patil**
