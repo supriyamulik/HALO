@@ -16,6 +16,8 @@ from app.research.schema import (
     HistoryItem,
 )
 from app.research.adapter import adapt_pipeline_output
+from app.retrieval.service import retrieve_passages
+from app.generation.service import generate_answer, GenerationServiceError
 from halo.pipeline import HaloPipeline
 
 router = APIRouter(prefix="/research", tags=["research"])
@@ -56,14 +58,42 @@ _seed_initial_history()
 
 @router.post("/query", response_model=QuerySubmitResponse)
 def submit_query(req: ResearchQueryRequest):
-    """Executes full legal verification pipeline on query text."""
+    """Executes full legal retrieval, answer generation, and verification pipeline on query text."""
     query_id = f"q_{uuid.uuid4().hex[:6]}"
-    raw_answer = req.candidate_answer or req.query_text
+
+    # 1. Candidate Answer Formulation (Retrieval + LLM Generation or explicit candidate)
+    candidate_passages: List[Dict[str, Any]] = []
+    if req.candidate_answer and req.candidate_answer.strip():
+        raw_answer = req.candidate_answer.strip()
+    else:
+        # Step A: Retrieve authoritative legal passages
+        try:
+            candidate_passages = retrieve_passages(req.query_text, top_k=5)
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Legal retrieval step failed: {str(e)}",
+            )
+
+        # Step B: Generate grounded candidate answer via Groq LLM
+        try:
+            raw_answer = generate_answer(req.query_text, candidate_passages)
+        except GenerationServiceError as ge:
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail=f"Legal answer generation failed: {str(ge)}",
+            )
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Legal answer generation error: {str(e)}",
+            )
 
     try:
         pipeline_output = pipeline.process(
             query=req.query_text,
             raw_answer=raw_answer,
+            candidate_passages=candidate_passages,
         )
 
         adapted_result = adapt_pipeline_output(

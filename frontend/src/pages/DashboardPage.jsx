@@ -210,13 +210,12 @@ export default function DashboardPage() {
                           <span className="meta-confidence">
                             Confidence:{" "}
                             <strong
-                              className={`confidence-inline ${
-                                isVerified
-                                  ? "conf-verified"
-                                  : isWarning
+                              className={`confidence-inline ${isVerified
+                                ? "conf-verified"
+                                : isWarning
                                   ? "conf-warning"
                                   : "conf-failed"
-                              }`}
+                                }`}
                             >
                               {confPct}%
                             </strong>
@@ -261,7 +260,7 @@ export default function DashboardPage() {
             <div className="panel-header">
               <div className="panel-title-group">
                 <h2 className="panel-title">Upcoming Hearings</h2>
-                <span className="panel-badge">Next 14 days</span>
+                <span className="panel-badge">No data</span>
               </div>
               <button
                 type="button"
@@ -273,77 +272,12 @@ export default function DashboardPage() {
               </button>
             </div>
 
-            <div className="interactive-list">
-              <div
-                className="interactive-row"
-                role="button"
-                tabIndex={0}
-                onClick={() => navigate("/cases")}
-                title="View Case Docket"
-              >
-                <div className="row-content">
-                  <div className="row-title">State of NCT Delhi v. Sharma &amp; Ors.</div>
-                  <div className="row-meta">
-                    <span className="hearing-time-tag">Tomorrow, 10:30 AM</span>
-                    <span className="meta-sep">•</span>
-                    <span>High Court of Delhi</span>
-                    <span className="meta-sep">•</span>
-                    <span>Court Room 14</span>
-                  </div>
-                </div>
-                <div className="row-trailing">
-                  <span className="hearing-type-pill">Criminal Misc.</span>
-                  <ChevronRight size={16} className="row-arrow" />
-                </div>
-              </div>
-
-              <div
-                className="interactive-row"
-                role="button"
-                tabIndex={0}
-                onClick={() => navigate("/cases")}
-                title="View Case Docket"
-              >
-                <div className="row-content">
-                  <div className="row-title">TechCorp Logistics Merger &amp; Amalgamation</div>
-                  <div className="row-meta">
-                    <span className="hearing-time-tag">Oct 12, 02:00 PM</span>
-                    <span className="meta-sep">•</span>
-                    <span>NCLT Principal Bench</span>
-                    <span className="meta-sep">•</span>
-                    <span>Virtual Hearing</span>
-                  </div>
-                </div>
-                <div className="row-trailing">
-                  <span className="hearing-type-pill">Company Petition</span>
-                  <ChevronRight size={16} className="row-arrow" />
-                </div>
-              </div>
-
-              <div
-                className="interactive-row"
-                role="button"
-                tabIndex={0}
-                onClick={() => navigate("/cases")}
-                title="View Case Docket"
-              >
-                <div className="row-content">
-                  <div className="row-title">Mehta Real Estate v. Urban Development Auth.</div>
-                  <div className="row-meta">
-                    <span className="hearing-time-tag">Oct 19, 11:15 AM</span>
-                    <span className="meta-sep">•</span>
-                    <span>Supreme Court of India</span>
-                    <span className="meta-sep">•</span>
-                    <span>Court Room 3 (SLP)</span>
-                  </div>
-                </div>
-                <div className="row-trailing">
-                  <span className="hearing-type-pill">SLP (Civil)</span>
-                  <ChevronRight size={16} className="row-arrow" />
-                </div>
-              </div>
+            <div className="panel-empty-state">
+              <Calendar size={24} className="empty-icon" />
+              <p>No hearing data available.</p>
             </div>
           </div>
+
         </section>
       </div>
     </AppShell>

@@ -28,7 +28,11 @@ def client_fixture():
     SQLModel.metadata.drop_all(test_engine)
 
 
-def test_research_query_submit(client: TestClient):
+from unittest.mock import patch
+
+
+@patch("app.research.controller.generate_answer", return_value="Under Section 135 of the Companies Act, 2013, every qualifying company must constitute a Corporate Social Responsibility Committee.")
+def test_research_query_submit(mock_gen, client: TestClient):
     payload = {
         "query_text": "Is CSR committee mandatory under Section 135 of Companies Act, 2013?",
         "jurisdiction": "Supreme Court of India",
@@ -46,6 +50,17 @@ def test_research_query_submit(client: TestClient):
     assert len(res["claims"]) > 0
     assert "confidence_score" in res
     assert "evidence_coverage" in res
+
+
+def test_research_query_generation_failure_503(client: TestClient):
+    from app.generation.service import GenerationServiceError
+    with patch("app.research.controller.generate_answer", side_effect=GenerationServiceError("Groq quota exceeded")):
+        payload = {
+            "query_text": "Is CSR committee mandatory under Section 135 of Companies Act, 2013?",
+        }
+        response = client.post("/api/v1/research/query", json=payload)
+        assert response.status_code == 503
+        assert "Legal answer generation failed" in response.json()["detail"]
 
 
 def test_research_history_get(client: TestClient):

@@ -9,3 +9,8 @@ pydantic-settings
 email-validator
 pytest
 httpx
+python-dotenv
+rank_bm25
+groq
+torch
+transformers

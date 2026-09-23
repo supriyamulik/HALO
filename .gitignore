@@ -7,3 +7,4 @@ dist/
 .pytest_cache/
 audit_store.jsonl
 backend/audit_store.jsonl
+HALO-new/
