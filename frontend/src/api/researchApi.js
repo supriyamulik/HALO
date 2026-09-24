@@ -48,7 +48,10 @@ export async function submitQuery(queryText, filters = {}) {
       jurisdiction: filters.jurisdiction || "Supreme Court of India",
       court_level: filters.courtLevel || "All Courts",
       date_range: filters.dateRange || "all",
-      candidate_answer: queryText,
+      // NOTE: candidate_answer is intentionally omitted here.
+      // That field is only for explicitly supplying a pre-written answer
+      // to the verification pipeline. Normal search must leave it empty
+      // so the backend runs retrieval + LLM generation.
     };
     const response = await api.post("/research/query", payload);
     const data = response.data;
@@ -62,7 +65,7 @@ export async function submitQuery(queryText, filters = {}) {
     // ── 2. Fallback: Microservice Pipeline on :8001 (/pipeline-api/research) ──
     const payload = {
       query: queryText,
-      candidate_answer: queryText,
+      // candidate_answer intentionally omitted — let the pipeline run LLM generation.
       citations: [],
       candidate_passages: [],
     };

@@ -46,7 +46,7 @@ class LegalAnswerGenerationService:
         self.model_name = os.environ.get("GROQ_MODEL", "qwen/qwen3.8-27b")
         self.temperature = float(os.environ.get("GROQ_TEMPERATURE", 0.0))
         self.top_p = float(os.environ.get("GROQ_TOP_P", 1.0))
-        self.max_tokens = int(os.environ.get("GROQ_MAX_TOKENS", 1024))
+        self.max_tokens = int(os.environ.get("GROQ_MAX_TOKENS", 800))
         self.seed = int(os.environ.get("GROQ_SEED", 42))
 
         # Groq client instantiation

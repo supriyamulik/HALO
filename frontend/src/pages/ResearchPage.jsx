@@ -635,7 +635,7 @@ export default function ResearchPage() {
               ) : (
                 <div className="results-meta">
                   <span className="results-count">
-                    {cards.length} authoritative authority{cards.length !== 1 ? "s" : ""} retrieved
+                    {cards.length} authoritative {cards.length === 1 ? "authority" : "authorities"} retrieved
                   </span>
                   <StatusBadge
                     variant="verified"
