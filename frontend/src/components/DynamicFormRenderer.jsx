@@ -61,6 +61,49 @@ const VALIDATORS = {
 };
 
 const HINDI_FIELD_LABELS = {
+  // Corporate & Board Resolutions
+  company_cin: "कंपनी सीआईएन (Company CIN)",
+  company_name: "कंपनी का नाम (Company Name)",
+  registered_office: "कंपनी का पंजीकृत कार्यालय (Registered Office Address)",
+  meeting_date: "बोर्ड बैठक की तिथि (Board Meeting Date)",
+  meeting_venue: "बैठक का स्थान (Meeting Venue)",
+  director_name: "नियुक्त निदेशक का पूरा नाम (Appointee Full Name)",
+  director_din: "निदेशक पहचान संख्या (Appointee DIN)",
+  effective_date: "प्रभावी तिथि (Effective Date)",
+  articles_authorise: "अंतरनियम (AOA) अतिरिक्त निदेशक नियुक्ति अधिकृत करता है (Articles Authorise Appointment)",
+  co_signatory: "अधिकृत हस्ताक्षरकर्ता / अध्यक्ष (Authorized Signatory / Chairman)",
+  signatory: "अधिकृत हस्ताक्षरकर्ता (Authorized Signatory)",
+  resolution_subject: "संकल्प का विषय (Resolution Subject)",
+  resolution_body: "पारित संकल्प का पाठ (Text of Resolutions Passed)",
+  resolution_date: "संकल्प पारित होने की तिथि (Date of Resolution Passed)",
+  roc_jurisdiction: "कंपनी रजिस्ट्रार (ROC) क्षेत्राधिकार (ROC Jurisdiction)",
+  professional_name: "प्रमाणित पेशेवर का नाम (Certifying Professional Name)",
+
+  // Petition S.241/242 NCLT
+  nclt_bench: "राष्ट्रीय कंपनी विधि अधिकरण पीठ (NCLT Bench)",
+  case_year: "दायर करने का वर्ष (Filing Year)",
+  petitioner_name: "याचिकाकर्ता का नाम (Petitioner Name)",
+  petitioner_holding_pct: "याचिकाकर्ता शेयरधारिता % (Petitioner Shareholding %)",
+  respondent_company: "प्रतिवादी कंपनी (Respondent Company)",
+  oppressive_acts: "उत्पीड़न एवं कुप्रबंधन का विवरण (Oppressive & Prejudicial Acts)",
+  prayer_sought: "प्रार्थित अनुतोष / याचना (Substantive Reliefs / Prayers Sought)",
+
+  // Affidavits
+  court: "न्यायालय / अधिकरण (Court / Forum)",
+  case_no: "मुकदमा / वाद संख्या (Suit / Case Number)",
+  cause_title: "वाद शीर्षक / पक्षकार (Cause Title)",
+  deponent_name: "शपथकर्ता का नाम (Deponent Full Name)",
+  deponent_age: "शपथकर्ता की आयु (Deponent Age)",
+  deponent_parent: "पिता / माता का नाम (Father's / Mother's Name)",
+  deponent_address: "शपथकर्ता का स्थाई पता (Deponent Address)",
+  deponent_role: "शपथकर्ता की हैसियत / पद (Deponent Capacity)",
+  affirmation_place: "शपथ का स्थान (Place of Affirmation)",
+  facts_statement: "शपथपूर्वक सत्यापित तथ्य (Sworn Statements of Fact)",
+  assessment_year: "कर निर्धारण वर्ष (Assessment Year)",
+  deponent_din: "निदेशक पहचान संख्या (Director DIN)",
+  deponent_pan: "निदेशक पैन (Director PAN)",
+  due_diligence_facts: "सम्यक तत्परता तथ्य (Due Diligence Facts)",
+
   // Rent Agreement
   landlord_name: "मकान मालिक का पूरा नाम (Landlord Full Name)",
   landlord_pan: "मकान मालिक का पैन / आधार (Landlord PAN)",
@@ -98,7 +141,6 @@ const HINDI_FIELD_LABELS = {
   purpose: "गोपनीय प्रकटीकरण का उद्देश्य (Purpose of Disclosure)",
   duration_years: "गोपनीयता अवधि (Duration in Years)",
   governing_city: "न्यायालय अधिकार क्षेत्र (Governing Court Jurisdiction)",
-  effective_date: "प्रभावी तिथि (Effective Date)",
 
   // Consultant Agreement
   client_name: "क्लाइंट / कंपनी का नाम (Client / Company Name)",
@@ -207,12 +249,20 @@ export default function DynamicFormRenderer({
                   value={val}
                   onChange={(e) => onChange(f.id, e.target.value)}
                 >
-                  <option value="">-- Select {effectiveLabel} --</option>
-                  {(f.options || []).map((opt) => (
-                    <option key={opt} value={opt}>
-                      {opt}
-                    </option>
-                  ))}
+                  <option value="">
+                    {isHindi
+                      ? `-- चयन करें: ${effectiveLabel.split(" (")[0]} --`
+                      : `-- Select ${f.label} --`}
+                  </option>
+                  {(f.options || []).map((opt, optIdx) => {
+                    const optVal = typeof opt === "object" && opt !== null ? opt.value : opt;
+                    const optLabel = typeof opt === "object" && opt !== null ? opt.label : opt;
+                    return (
+                      <option key={optVal || optIdx} value={optVal}>
+                        {optLabel}
+                      </option>
+                    );
+                  })}
                 </select>
               ) : f.type === "boolean" ? (
                 /* Boolean Checkbox Toggle */

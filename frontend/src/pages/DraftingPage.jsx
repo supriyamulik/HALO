@@ -334,7 +334,7 @@ export default function DraftingPage() {
       try {
         await autosaveDraftInputs(currentDraftId, next);
         setSaveStatus("saved");
-        const updatedPreview = await getDraftPreview(currentDraftId);
+        const updatedPreview = await getDraftPreview(currentDraftId, targetLanguage);
         setPreviewHtml(updatedPreview);
       } catch {
         setSaveStatus("idle");
@@ -392,7 +392,7 @@ export default function DraftingPage() {
       // Save to draft version and refresh live preview immediately
       if (currentDraftId) {
         await autosaveDraftInputs(currentDraftId, updatedInputs);
-        const updatedPreview = await getDraftPreview(currentDraftId);
+        const updatedPreview = await getDraftPreview(currentDraftId, targetLanguage);
         setPreviewHtml(updatedPreview);
       }
 
@@ -957,7 +957,7 @@ export default function DraftingPage() {
                         if (!currentDraftId) return;
                         setPreviewLoading(true);
                         try {
-                          const updated = await getDraftPreview(currentDraftId);
+                          const updated = await getDraftPreview(currentDraftId, targetLanguage);
                           setPreviewHtml(updated);
                         } finally {
                           setPreviewLoading(false);

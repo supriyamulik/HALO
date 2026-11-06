@@ -283,7 +283,7 @@ def api_preview_draft(
     <head>
         <meta charset="utf-8">
         <style>
-            body {{ font-family: 'Times New Roman', serif; line-height: 1.6; color: #1e293b; background: #fff; padding: 40px; margin: 0 auto; max-width: 800px; }}
+            body {{ font-family: 'Nirmala UI', 'Mangal', 'Times New Roman', serif; line-height: 1.6; color: #1e293b; background: #fff; padding: 40px; margin: 0 auto; max-width: 800px; }}
             pre {{ white-space: pre-wrap; font-family: inherit; font-size: 15px; }}
             .seal {{ margin-top: 30px; padding-top: 15px; border-top: 1px solid #e2e8f0; font-family: monospace; font-size: 11px; color: #64748b; }}
         </style>
