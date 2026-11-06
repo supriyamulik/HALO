@@ -60,11 +60,61 @@ const VALIDATORS = {
   },
 };
 
+const HINDI_FIELD_LABELS = {
+  // Rent Agreement
+  landlord_name: "मकान मालिक का पूरा नाम (Landlord Full Name)",
+  landlord_pan: "मकान मालिक का पैन / आधार (Landlord PAN)",
+  landlord_address: "मकान मालिक का स्थाई पता (Landlord Permanent Address)",
+  tenant_name: "किरायेदार का पूरा नाम (Tenant Full Name)",
+  tenant_pan: "किरायेदार का पैन / आधार (Tenant PAN / Aadhaar)",
+  tenant_address: "किरायेदार का स्थाई पता (Tenant Permanent Address)",
+  premises_address: "किराए पर दी जाने वाली संपत्ति का पता (Premises Address)",
+  monthly_rent: "मासिक किराया राशि (Monthly Rent ₹)",
+  security_deposit: "ब्याज-मुक्त सुरक्षा धरोहर राशि (Security Deposit ₹)",
+  commencement_date: "लीज प्रारंभ तिथि (Commencement Date)",
+  tenure_months: "अनुबंध अवधि (Tenure Months)",
+  lock_in_months: "लॉक-इन अवधि (Lock-In Period Months)",
+  notice_period_days: "समाप्ति नोटिस अवधि (Notice Period Days)",
+  maintenance_charges: "सोसायटी / मेंटेनेंस शुल्क (Maintenance Charges ₹)",
+  target_language: "दस्तावेज़ की भाषा (Document Language)",
+
+  // Cheque Bounce 138 Notice
+  payee_name: "शिकायतकर्ता / प्राप्तकर्ता का नाम (Payee Name)",
+  drawer_name: "आरोपी / चेक जारीकर्ता का नाम (Drawer Name)",
+  drawer_address: "आरोपी का पूरा पता (Drawer Address)",
+  cheque_no: "चेक संख्या (Cheque Number)",
+  cheque_date: "चेक की तिथि (Cheque Date)",
+  cheque_amount: "चेक राशि (Cheque Amount ₹)",
+  bank_name: "बैंक एवं शाखा का नाम (Drawee Bank & Branch)",
+  dishonour_date: "बैंक रिटर्न मेमो की तिथि (Return Memo Date)",
+  dishonour_reason: "चेक अनादर का कारण (Reason for Dishonour)",
+  advocate_name: "अधिवक्ता का नाम (Advocate Name)",
+
+  // Commercial NDA
+  disclosing_party: "प्रकटीकरण पक्ष / कंपनी (Disclosing Party)",
+  disclosing_address: "प्रकटीकरण पक्ष का पता (Disclosing Party Address)",
+  receiving_party: "प्राप्तकर्ता पक्ष / प्रतिपक्ष (Receiving Party)",
+  receiving_address: "प्राप्तकर्ता पक्ष का पता (Receiving Party Address)",
+  purpose: "गोपनीय प्रकटीकरण का उद्देश्य (Purpose of Disclosure)",
+  duration_years: "गोपनीयता अवधि (Duration in Years)",
+  governing_city: "न्यायालय अधिकार क्षेत्र (Governing Court Jurisdiction)",
+  effective_date: "प्रभावी तिथि (Effective Date)",
+
+  // Consultant Agreement
+  client_name: "क्लाइंट / कंपनी का नाम (Client / Company Name)",
+  consultant_name: "सलाहकार / कंसल्टेंट का नाम (Consultant Name)",
+  consultant_pan: "कंसल्टेंट पैन / जीएसटी (Consultant PAN/GSTIN)",
+  scope_of_work: "सेवाओं एवं कार्यों का विस्तृत विवरण (Scope of Work)",
+  fee_amount: "व्यावसायिक परामर्श शुल्क (Professional Fee ₹)",
+  payment_milestones: "भुगतान शर्तें एवं माइलस्टोन (Payment Milestones)",
+};
+
 export default function DynamicFormRenderer({
   schema,
   values = {},
   onChange,
   errors = {},
+  targetLanguage = "en",
 }) {
   if (!schema || !Array.isArray(schema.fields)) {
     return (
@@ -111,6 +161,19 @@ export default function DynamicFormRenderer({
           const isFullWidth = f.type === "text" || f.id.includes("address") || f.id.includes("prayer") || f.id.includes("facts") || f.id.includes("acts");
           const validatorDef = f.validator ? VALIDATORS[f.validator] : null;
 
+          const isHindi = targetLanguage === "hi" || values.target_language === "hi";
+          const isBilingual = targetLanguage === "bilingual" || values.target_language === "bilingual";
+
+          const effectiveLabel = (isHindi && HINDI_FIELD_LABELS[f.id])
+            ? HINDI_FIELD_LABELS[f.id]
+            : (isBilingual && HINDI_FIELD_LABELS[f.id])
+            ? `${f.label} / ${HINDI_FIELD_LABELS[f.id].split(" (")[0]}`
+            : f.label;
+
+          const effectivePlaceholder = isHindi && HINDI_FIELD_LABELS[f.id]
+            ? `कृपया ${HINDI_FIELD_LABELS[f.id].split(" (")[0]} दर्ज करें...`
+            : f.placeholder || `Enter ${f.label.toLowerCase()}...`;
+
           return (
             <div
               key={f.id}
@@ -118,7 +181,7 @@ export default function DynamicFormRenderer({
             >
               <label htmlFor={f.id} className="form-field-label">
                 <span>
-                  {f.label}
+                  {effectiveLabel}
                   {f.required && <span className="required-star">*</span>}
                 </span>
                 {f.validator && (
@@ -131,7 +194,7 @@ export default function DynamicFormRenderer({
                 <textarea
                   id={f.id}
                   className={`form-textarea ${errorMsg ? "has-error" : ""}`}
-                  placeholder={f.placeholder || `Enter ${f.label.toLowerCase()}...`}
+                  placeholder={effectivePlaceholder}
                   value={val}
                   rows={4}
                   onChange={(e) => onChange(f.id, e.target.value)}
@@ -144,7 +207,7 @@ export default function DynamicFormRenderer({
                   value={val}
                   onChange={(e) => onChange(f.id, e.target.value)}
                 >
-                  <option value="">-- Select {f.label} --</option>
+                  <option value="">-- Select {effectiveLabel} --</option>
                   {(f.options || []).map((opt) => (
                     <option key={opt} value={opt}>
                       {opt}
@@ -161,7 +224,7 @@ export default function DynamicFormRenderer({
                     onChange={(e) => onChange(f.id, e.target.checked)}
                   />
                   <span style={{ fontSize: "0.875rem", color: "var(--halo-text)" }}>
-                    {f.label}
+                    {effectiveLabel}
                   </span>
                 </label>
               ) : (
@@ -170,7 +233,7 @@ export default function DynamicFormRenderer({
                   id={f.id}
                   type={f.type === "number" ? "number" : f.type === "date" ? "date" : "text"}
                   className={`form-input-text ${errorMsg ? "has-error" : ""}`}
-                  placeholder={f.placeholder || `Enter ${f.label.toLowerCase()}`}
+                  placeholder={effectivePlaceholder}
                   value={val}
                   step={f.type === "number" ? "any" : undefined}
                   onChange={(e) => onChange(f.id, e.target.value)}

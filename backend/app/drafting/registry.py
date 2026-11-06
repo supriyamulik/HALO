@@ -278,8 +278,76 @@ DEPONENT
                 {"id": "advocate_name", "label": "Advocate Sending Notice", "type": "string", "required": True, "placeholder": "Adv. Prithviraj Patil"},
             ]
         },
-        body_template="""LEGAL DEMAND NOTICE UNDER SECTION 138 OF THE NEGOTIABLE INSTRUMENTS ACT, 1881
+        body_template="""{% if target_language == 'hi' %}
+विधिक मांग सूचना (LEGAL DEMAND NOTICE)
+धारा 138 एवं 142, परक्राम्य लिखत अधिनियम, 1881 (पंजीकृत डाक / स्पीड पोस्ट द्वारा)
+========================================================================================================================
+
+दिनांक: {{ current_date_formatted }}
+
+सेवा में,
+{{ drawer_name }}
+{{ drawer_address }}
+
+मेरे पक्षकार (शिकायतकर्ता) की ओर से एवं उनके निर्देशानुसार:
+{{ payee_name }} (जिन्हें आगे "मेरे पक्षकार" कहा गया है)
+
+महोदय/महोदया,
+
+अपने उक्त पक्षकार के स्पष्ट निर्देशों के तहत, मैं आपको परक्राम्य लिखत अधिनियम, 1881 की धारा 138 के अधीन निम्नलिखित सांविधिक विधिक मांग सूचना प्रेषित करता हूँ:
+
+1. यह कि आपके द्वारा मेरे पक्षकार के प्रति वैध रूप से प्रवर्तनीय ऋण एवं दायित्व के भुगतान हेतु चेक संख्या {{ cheque_no }} दिनांक {{ cheque_date_formatted }} राशि {{ formatted_currency }} ({{ amount_in_words }}) जारी किया गया था, जो बैंक {{ bank_name }} पर देय था।
+
+2. यह कि मेरे पक्षकार द्वारा उक्त चेक को अपने बैंक के माध्यम से भुगतान हेतु प्रस्तुत करने पर, उक्त चेक आपके बैंक द्वारा रिटर्न मेमो दिनांक {{ dishonour_date_formatted }} के माध्यम से बिना भुगतान किए अनादरित (Dishonour) कर वापस लौटा दिया गया, जिसका कारण "{{ dishonour_reason }}" दर्शाया गया।
+
+3. यह कि चेक अनादर की लिखित सूचना मेरे पक्षकार को सांविधिक 30 दिनों की निर्धारित अवधि के भीतर प्राप्त हुई है।
+
+4. अतः इस सूचना के माध्यम से मैं आपको निर्देशित करता हूँ कि आप इस विधिक सूचना की प्राप्ति के 15 (पंद्रह) दिनों के भीतर उक्त राशि {{ formatted_currency }} का पूर्ण भुगतान मेरे पक्षकार को अनिवार्य रूप से कर दें। 
+
+यदि आप उक्त 15 दिनों की अवधि में भुगतान करने में विफल रहते हैं, तो मेरे पक्षकार आपके विरुद्ध परक्राम्य लिखत अधिनियम, 1881 की धारा 138/142 एवं भारतीय न्याय संहिता / भा.दं.सं. के अधीन सक्षम न्यायालय में आपराधिक परिवाद (Criminal Complaint) दायर करने के लिए पूर्णतः स्वतंत्र होंगे, जिसकी संपूर्ण वैधानिक एवं आर्थिक जिम्मेदारी आपकी स्वयं की होगी।
+
+भवदीय,
+
+________________________________________
+{{ advocate_name }}
+अधिवक्ता, पक्षकार / शिकायतकर्ता
+
+{% elif target_language == 'bilingual' %}
+STATUTORY DEMAND NOTICE / सांविधिक विधिक मांग सूचना
+SECTION 138 OF THE NEGOTIABLE INSTRUMENTS ACT, 1881 / परक्राम्य लिखत अधिनियम धारा 138
+========================================================================================================================
+
+Date / दिनांक: {{ current_date_formatted }}
+
+TO / प्रेषित:
+{{ drawer_name }}
+{{ drawer_address }}
+
+UNDER INSTRUCTIONS FROM MY CLIENT / मेरे पक्षकार के निर्देशानुसार:
+{{ payee_name }} ("My Client" / "मेरे पक्षकार")
+
+1. CHEQUE DETAILS / चेक का विवरण:
+   In discharge of your legally enforceable debt, you issued Cheque No. {{ cheque_no }} dated {{ cheque_date_formatted }} for ₹ {{ cheque_amount }}/- ({{ amount_in_words }}) drawn on {{ bank_name }}.
+   (आपके द्वारा वैध ऋण के भुगतान हेतु चेक संख्या {{ cheque_no }} दिनांक {{ cheque_date_formatted }} राशि ₹ {{ cheque_amount }}/- जारी किया गया था।)
+
+2. DISHONOUR / चेक का अनादर:
+   The said instrument was dishonoured and returned unpaid vide Bank Memo dated {{ dishonour_date_formatted }} for reason: "{{ dishonour_reason }}".
+   (उक्त चेक आपके बैंक द्वारा बैंक मेमो दिनांक {{ dishonour_date_formatted }} के द्वारा "{{ dishonour_reason }}" के कारण अनादरित कर वापस किया गया।)
+
+3. 15-DAY STATUTORY DEMAND / 15-दिवसीय अनिवार्य मांग:
+   I hereby call upon you to make the payment of ₹ {{ cheque_amount }}/- within FIFTEEN (15) DAYS from the receipt of this notice.
+   (अतः इस सूचना प्राप्ति के 15 दिवस के भीतर उक्त संपूर्ण राशि का भुगतान अनिवार्य रूप से करें अन्यथा आपके विरुद्ध न्यायालय में आपराधिक परिवाद दायर किया जाएगा।)
+
+Yours faithfully / भवदीय,
+
+________________________________________
+{{ advocate_name }}
+Advocate for the Payee / अधिवक्ता
+
+{% else %}
+LEGAL DEMAND NOTICE UNDER SECTION 138 OF THE NEGOTIABLE INSTRUMENTS ACT, 1881
 (REGISTERED POST A.D. & SPEED POST)
+========================================================================================================================
 
 Date: {{ current_date_formatted }}
 
@@ -307,7 +375,7 @@ Yours faithfully,
 ________________________________________
 {{ advocate_name }}
 Advocate for the Complainant / Payee
-"""
+{% endif %}"""
     ),
 
     # ─── 6. Generic Board Resolution ─────────────────────────────────────────
@@ -574,10 +642,90 @@ LESSEE: ________________________________________
                 {"id": "purpose", "label": "Purpose of Disclosure", "type": "text", "required": True, "placeholder": "Evaluating a strategic joint-venture partnership and API data integration for legal technologies."},
                 {"id": "duration_years", "label": "Confidentiality Duration (Years)", "type": "number", "required": True, "default": 2},
                 {"id": "governing_city", "label": "Governing Court Jurisdiction", "type": "string", "required": True, "default": "New Delhi", "placeholder": "New Delhi / Mumbai / Bengaluru"},
-                {"id": "effective_date", "label": "Effective Date", "type": "date", "required": True}
+                {"id": "effective_date", "label": "Effective Date", "type": "date", "required": True},
+                {"id": "target_language", "label": "Output Language", "type": "select", "required": True, "default": "en", "options": [
+                    {"label": "English (Standard Legal)", "value": "en"},
+                    {"label": "हिंदी (Hindi Devnagari)", "value": "hi"},
+                    {"label": "Bilingual (English + हिंदी)", "value": "bilingual"}
+                ]}
             ]
         },
-        body_template="""MUTUAL NON-DISCLOSURE AND CONFIDENTIALITY AGREEMENT
+        body_template="""{% if target_language == 'hi' %}
+गैर-प्रकटीकरण एवं गोपनीयता अनुबंध (NON-DISCLOSURE AGREEMENT)
+(भारतीय अनुबंध अधिनियम, 1872 की धारा 27 के तहत)
+========================================================================================================================
+
+यह अनुबंध आज दिनांक {{ effective_date_formatted }} को निम्नलिखित पक्षों के मध्य निष्पादित किया गया:
+
+1. {{ disclosing_party }}, जिसका पंजीकृत कार्यालय:
+   {{ disclosing_address }}
+   (जिन्हें आगे "प्रकटीकरण पक्ष / DISCLOSING PARTY" कहा गया है)
+
+तथा
+
+2. {{ receiving_party }}, जिसका मुख्य कार्यालय:
+   {{ receiving_address }}
+   (जिन्हें आगे "प्राप्तकर्ता पक्ष / RECEIVING PARTY" कहा गया है)
+
+चूंकि दोनों पक्ष निम्नलिखित व्यावसायिक उद्देश्य हेतु गोपनीय सूचनाएं साझा करना चाहते हैं:
+"{{ purpose }}"
+
+अतः अब दोनों पक्ष निम्नलिखित शर्तों पर परस्पर सहमत होते हैं:
+
+1. गोपनीय सूचना की परिभाषा:
+   इसके अंतर्गत सभी तकनीकी डेटा, व्यापारिक रहस्य, प्रोप्राइटरी एल्गोरिदम, वित्तीय मॉडल, क्लाइंट डेटा और सॉफ्टवेयर सोर्स कोड सम्मिलित होंगे।
+
+2. गोपनीयता बनाए रखने का दायित्व:
+   प्राप्तकर्ता पक्ष यह वचन देता है कि वह सभी गोपनीय सूचनाओं को पूर्णतः सुरक्षित रखेगा तथा प्रकटीकरण पक्ष की पूर्व लिखित अनुमति के बिना किसी तीसरे पक्ष को प्रकट नहीं करेगा।
+
+3. गोपनीयता की अवधि:
+   गोपनीयता बनाए रखने की बाध्यता इस अनुबंध के प्रारंभ होने की तिथि से कुल {{ duration_years }} वर्ष की अवधि तक पूर्णतः प्रभावी रहेगी।
+
+4. अधिकार क्षेत्र एवं शासी विधि:
+   यह अनुबंध भारतीय विधियों के अधीन शासित होगा तथा किसी भी विवाद की स्थिति में केवल {{ governing_city }} स्थित सक्षम न्यायालयों का ही अनन्य क्षेत्राधिकार होगा।
+
+हस्ताक्षर प्रकटीकरण पक्ष:
+________________________________________
+प्राधिकृत हस्ताक्षरकर्ता ({{ disclosing_party }})
+
+हस्ताक्षर प्राप्तकर्ता पक्ष:
+________________________________________
+प्राधिकृत हस्ताक्षरकर्ता ({{ receiving_party }})
+
+{% elif target_language == 'bilingual' %}
+MUTUAL NON-DISCLOSURE AGREEMENT / पारस्परिक गोपनीयता अनुबंध
+INDIAN CONTRACT ACT, 1872 / भारतीय अनुबंध अधिनियम, 1872
+========================================================================================================================
+
+Effective Date / प्रभावी तिथि: {{ effective_date_formatted }}
+
+PARTIES / पक्षकार:
+1. {{ disclosing_party }} (Disclosing Party / प्रकटीकरण पक्ष)
+   Address: {{ disclosing_address }}
+2. {{ receiving_party }} (Receiving Party / प्राप्तकर्ता पक्ष)
+   Address: {{ receiving_address }}
+
+PURPOSE / उद्देश्य:
+"{{ purpose }}"
+
+1. CONFIDENTIALITY / गोपनीयता:
+   The Receiving Party agrees to maintain strict confidentiality of all proprietary IP, trade secrets, and source code.
+   (प्राप्तकर्ता पक्ष सभी व्यापारिक रहस्यों एवं बौद्धिक संपदा की पूर्ण गोपनीयता बनाए रखने हेतु बाध्य है।)
+
+2. TERM / अवधि:
+   This covenant shall remain in force for a period of {{ duration_years }} Years.
+   (यह गोपनीयता दायित्व कुल {{ duration_years }} वर्ष की अवधि तक प्रभावी रहेगा।)
+
+3. JURISDICTION / क्षेत्राधिकार:
+   Courts at {{ governing_city }} shall possess exclusive jurisdiction.
+   ({{ governing_city }} स्थित सक्षम न्यायालयों का अनन्य अधिकार क्षेत्र होगा।)
+
+Authorized Signatures / प्राधिकृत हस्ताक्षर:
+______________________                      ______________________
+{{ disclosing_party }}                      {{ receiving_party }}
+
+{% else %}
+MUTUAL NON-DISCLOSURE AND CONFIDENTIALITY AGREEMENT
 PURSUANT TO THE INDIAN CONTRACT ACT, 1872
 ========================================================================================================================
 
@@ -604,7 +752,7 @@ NOW, THEREFORE, the parties agree as follows:
    The Receiving Party agrees to hold all Confidential Information in strict trust and confidence and shall not disclose it to third parties without prior written consent.
 
 3. TERM OF PROTECTION:
-   The obligations of confidentiality shall survive for a period of {{ duration_years }} ({{ duration_years | words | default(duration_years) }}) YEARS from the Effective Date.
+   The obligations of confidentiality shall survive for a period of {{ duration_years }} ({{ duration_years | default(2) }}) YEARS from the Effective Date.
 
 4. GOVERNING LAW & JURISDICTION:
    This Agreement shall be governed by the laws of India. The courts at {{ governing_city }} shall have exclusive jurisdiction over any disputes.
@@ -618,7 +766,7 @@ Authorized Signatory
 For {{ receiving_party | upper }}:
 ________________________________________
 Authorized Signatory
-"""
+{% endif %}"""
     ),
 
     # ─── 10. Independent Consultant Agreement ─────────────────────────────────
@@ -640,10 +788,80 @@ Authorized Signatory
                 {"id": "fee_amount", "label": "Professional Fee (₹)", "type": "currency", "required": True, "placeholder": "150000"},
                 {"id": "payment_milestones", "label": "Payment Terms & Milestones", "type": "string", "required": True, "default": "50% advance upon signing, 50% upon milestone deliverables acceptance"},
                 {"id": "effective_date", "label": "Commencement Date", "type": "date", "required": True},
-                {"id": "notice_period_days", "label": "Termination Notice Period (Days)", "type": "number", "required": True, "default": 15}
+                {"id": "notice_period_days", "label": "Termination Notice Period (Days)", "type": "number", "required": True, "default": 15},
+                {"id": "target_language", "label": "Output Language", "type": "select", "required": True, "default": "en", "options": [
+                    {"label": "English (Standard Legal)", "value": "en"},
+                    {"label": "हिंदी (Hindi Devnagari)", "value": "hi"},
+                    {"label": "Bilingual (English + हिंदी)", "value": "bilingual"}
+                ]}
             ]
         },
-        body_template="""INDEPENDENT CONSULTANT & PROFESSIONAL SERVICES AGREEMENT
+        body_template="""{% if target_language == 'hi' %}
+स्वतंत्र परामर्शदाता एवं व्यावसायिक सेवा अनुबंध (INDEPENDENT CONSULTANT AGREEMENT)
+(भारतीय अनुबंध अधिनियम, 1872 एवं कॉपीराइट अधिनियम, 1957 की धारा 17 के तहत)
+========================================================================================================================
+
+यह अनुबंध आज दिनांक {{ effective_date_formatted }} को निम्नलिखित पक्षों के मध्य निष्पादित किया गया:
+
+क्लाइंट / कंपनी:
+{{ client_name }} (जिन्हें आगे "कंपनी / प्रथम पक्ष" कहा गया है)
+
+तथा
+
+स्वतंत्र परामर्शदाता:
+{{ consultant_name }} (पैन: {{ consultant_pan | default('उपलब्ध नहीं') }}) (जिन्हें आगे "सलाहकार / द्वितीय पक्ष" कहा गया है)
+
+1. सेवाओं का कार्यक्षेत्र (SCOPE OF SERVICES):
+   सलाहकार कंपनी को निम्नलिखित व्यावसायिक एवं तकनीकी सेवाएं प्रदान करेगा:
+   "{{ scope_of_work }}"
+
+2. व्यावसायिक परामर्श शुल्क एवं भुगतान (FEES & REMUNERATION):
+   कंपनी सलाहकार को कुल ₹ {{ fee_amount }}/- का परामर्श शुल्क आयकर अधिनियम, 1961 की धारा 194J के तहत लागू टीडीएस (TDS) कटौती के पश्चात अदा करेगी।
+   भुगतान शर्तें: {{ payment_milestones }}।
+
+3. बौद्धिक संपदा का हस्तांतरण (IP ASSIGNMENT):
+   कॉपीराइट अधिनियम, 1957 की धारा 17 के अधीन, कार्य के दौरान तैयार की गई सभी रिपोर्ट, कोड, एल्गोरिदम और तकनीकी दस्तावेज कंपनी की अनन्य संपत्ति ("Work made for hire") माने जाएंगे।
+
+4. अनुबंध समाप्ति (TERMINATION):
+   कोई भी पक्ष {{ notice_period_days }} दिनों का लिखित नोटिस देकर इस अनुबंध को समाप्त कर सकता है।
+
+हस्ताक्षर कंपनी:
+________________________________________
+प्राधिकृत हस्ताक्षरकर्ता ({{ client_name }})
+
+हस्ताक्षर सलाहकार:
+________________________________________
+{{ consultant_name }}
+
+{% elif target_language == 'bilingual' %}
+INDEPENDENT CONSULTANT AGREEMENT / स्वतंत्र परामर्शदाता अनुबंध
+INDIAN CONTRACT ACT, 1872 / भारतीय अनुबंध अधिनियम, 1872
+========================================================================================================================
+
+Commencement Date / प्रारंभ तिथि: {{ effective_date_formatted }}
+
+PARTIES / पक्षकार:
+1. {{ client_name }} (Company / प्रथम पक्ष)
+2. {{ consultant_name }} (Consultant / द्वितीय पक्ष, PAN: {{ consultant_pan | default('N/A') }})
+
+1. SERVICES / सेवाएं:
+   "{{ scope_of_work }}"
+
+2. PROFESSIONAL FEES / व्यावसायिक परामर्श शुल्क:
+   Total Fee: ₹ {{ fee_amount }}/- subject to statutory TDS u/s 194J.
+   (कुल परामर्श शुल्क राशि ₹ {{ fee_amount }}/- देय होगी।)
+   Milestones / भुगतान शर्तें: {{ payment_milestones }}.
+
+3. IP ASSIGNMENT / बौद्धिक संपदा:
+   All deliverables vest solely with the Company pursuant to Section 17 of Copyright Act, 1957.
+   (सभी कार्य एवं बौद्धिक संपदा कंपनी की अनन्य संपत्ति होगी।)
+
+Signatures / हस्ताक्षर:
+______________________                      ______________________
+Company / कंपनी                             Consultant / सलाहकार
+
+{% else %}
+INDEPENDENT CONSULTANT & PROFESSIONAL SERVICES AGREEMENT
 PURSUANT TO THE INDIAN CONTRACT ACT, 1872 & SECTION 17 OF THE COPYRIGHT ACT, 1957
 ========================================================================================================================
 
@@ -680,7 +898,7 @@ Authorized Signatory
 CONSULTANT:
 ________________________________________
 {{ consultant_name }}
-"""
+{% endif %}"""
     )
 }
 

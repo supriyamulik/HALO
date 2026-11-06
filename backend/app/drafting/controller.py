@@ -59,6 +59,7 @@ class DraftInputsUpdateRequest(BaseModel):
 class ExportRequest(BaseModel):
     format: str = "pdf"  # docx | pdf
     allow_partial: bool = True
+    target_language: Optional[str] = None
 
 
 class SmartIntakeRequest(BaseModel):
@@ -254,6 +255,7 @@ def api_generate_draft(
 @router.get("/drafts/{draft_id}/preview")
 def api_preview_draft(
     draft_id: str,
+    target_language: Optional[str] = None,
     firm_id: str = "firm_default",
     session: Session = Depends(get_session)
 ):
@@ -265,6 +267,8 @@ def api_preview_draft(
 
     versions = repo.get_draft_versions(draft_id)
     inputs = json.loads(versions[0].input_json) if versions else {}
+    if target_language:
+        inputs["target_language"] = target_language
 
     try:
         rendered_text, content_hash, _ = assemble_document(draft.template_id, inputs, allow_partial=True)
@@ -315,6 +319,8 @@ def api_export_draft(
 
     latest = versions[0]
     inputs = json.loads(latest.input_json)
+    if req.target_language:
+        inputs["target_language"] = req.target_language
 
     try:
         rendered_text, content_hash, _ = assemble_document(draft.template_id, inputs, allow_partial=req.allow_partial)
