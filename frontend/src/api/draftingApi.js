@@ -70,12 +70,27 @@ export async function generateDraft(draftId) {
   return data;
 }
 
-export async function getDraftPreview(draftId) {
-  const { data } = await api.get(`/drafts/${draftId}/preview`);
+export async function getDraftPreview(draftId, targetLanguage) {
+  const params = targetLanguage ? { target_language: targetLanguage } : {};
+  const { data } = await api.get(`/drafts/${draftId}/preview`, { params });
   return data;
 }
 
-export async function exportDraft(draftId, format = "pdf") {
-  const { data } = await api.post(`/drafts/${draftId}/exports`, { format });
+export async function exportDraft(draftId, format = "pdf", allowPartial = true, targetLanguage) {
+  const payload = { format, allow_partial: allowPartial };
+  if (targetLanguage) payload.target_language = targetLanguage;
+  const { data } = await api.post(`/drafts/${draftId}/exports`, payload);
+  return data;
+}
+
+export async function smartIntake(templateId, message, fileContent, fileName, currentInputs, targetLanguage) {
+  const { data } = await api.post("/drafts/smart-intake", {
+    template_id: templateId,
+    message,
+    file_content: fileContent,
+    file_name: fileName,
+    current_inputs: currentInputs,
+    target_language: targetLanguage,
+  });
   return data;
 }
