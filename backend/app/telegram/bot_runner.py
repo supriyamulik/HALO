@@ -29,7 +29,7 @@ from app.auth.repository import engine
 from app.telegram.service import TelegramGatewayService
 from app.telegram.controller import _send_telegram_message
 
-BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "9276529084:AAHrUdu2vfxqhjsxnzCZVMpUeyNvdKb-h0A")
+BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
 API_BASE = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
 
@@ -86,6 +86,10 @@ async def run_polling():
     print("🤖 HALO Telegram Bot Gateway Starting (Long-Polling Mode)")
     print(f"Bot Username: @{os.environ.get('TELEGRAM_BOT_USERNAME', 'HALO_NyayaSahyak_bot')}")
     print("=" * 60)
+
+    if not BOT_TOKEN:
+        print("[Telegram Bot] ERROR: TELEGRAM_BOT_TOKEN is not set. Please add TELEGRAM_BOT_TOKEN to your backend/.env file.")
+        return
 
     await init_bot()
 
